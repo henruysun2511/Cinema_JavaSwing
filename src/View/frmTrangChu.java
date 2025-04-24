@@ -68,6 +68,18 @@ public class frmTrangChu extends JFrame {
         
     }
     public void addEvents(){
+        //Điều hướng sang các form khác trong menu
+        mnuLichChieu.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                frmLichChieu LichChieu = new frmLichChieu("Lịch chiếu");
+                LichChieu.setVisible(true);
+            }
+        
+            public void mouseEntered(MouseEvent e) {
+                
+            }
+        });
+
         btnPrev.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 showPrevImage();
