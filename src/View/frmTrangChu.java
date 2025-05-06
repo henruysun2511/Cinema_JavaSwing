@@ -59,6 +59,9 @@ public class frmTrangChu extends JFrame {
         panelTop.add(lblImage);
         panelTop.add(btnNext);
 
+        JPanel pnCenter = new JPanel();
+        pnCenter.setLayout(new BorderLayout());
+
         // Thêm panel vào frame
         Container con = getContentPane();
         con.setLayout(new BorderLayout());
@@ -74,11 +77,9 @@ public class frmTrangChu extends JFrame {
                 frmLichChieu LichChieu = new frmLichChieu("Lịch chiếu");
                 LichChieu.setVisible(true);
             }
-        
-            public void mouseEntered(MouseEvent e) {
-                
-            }
         });
+        
+
 
         btnPrev.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {

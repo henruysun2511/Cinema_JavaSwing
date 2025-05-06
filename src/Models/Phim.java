@@ -1,4 +1,4 @@
-package Model;
+package Models;
 
 
 public class Phim {
@@ -6,18 +6,35 @@ public class Phim {
     private String tenPhim;
     private String ngayPhatHanh;
     private String daoDien;
-    private String thoiLuong;
+    private int thoiLuong;
     private String noiDung;
+    private String doTuoiChoPhep;
     private String anhPhim;
+    private int trangThai;
+    
+    public Phim() {
+    	this.maPhim="";
+    	this.tenPhim="";
+    	this.ngayPhatHanh= null;
+    	this.daoDien="";
+    	this.thoiLuong=0;
+    	this.noiDung="";
+    	this.doTuoiChoPhep="";
+    	this.anhPhim="";
+    	this.trangThai=0;
+    	
+    }
 
-    public Phim(String maPhim, String tenPhim, String ngayPhatHanh, String daoDien, String thoiLuong, String noiDung, String anhPhim) {
+    public Phim(String maPhim, String tenPhim, String ngayPhatHanh, String daoDien, int thoiLuong, String noiDung, String doTuoiChoPhep, String anhPhim, int trangThai) {
         this.maPhim = maPhim;
         this.tenPhim = tenPhim;
         this.ngayPhatHanh = ngayPhatHanh;
         this.daoDien = daoDien;
         this.thoiLuong = thoiLuong;
         this.noiDung = noiDung;
+        this.doTuoiChoPhep = doTuoiChoPhep;
         this.anhPhim = anhPhim;
+        this.trangThai = trangThai;
     }
 
     public String getMaPhim() {
@@ -36,17 +53,26 @@ public class Phim {
         return daoDien;
     }
 
-    public String getThoiLuong() {
+    public int getThoiLuong() {
         return thoiLuong;
     }
 
     public String getNoiDung() {
         return noiDung;
     }
+    
+    public String getDoTuoiChoPhep() {
+		return doTuoiChoPhep;
+	}
 
-    public String getAnhPhim() {
+	public String getAnhPhim() {
         return anhPhim;
     }
+    
+    public int getTrangThai() {
+        return trangThai;
+    }
+    
 
     public void setMaPhim(String maPhim) {
         this.maPhim = maPhim;
@@ -64,7 +90,7 @@ public class Phim {
         this.daoDien = daoDien;
     }
 
-    public void setThoiLuong(String thoiLuong) {
+    public void setThoiLuong(int thoiLuong) {
         this.thoiLuong = thoiLuong;
     }
 
@@ -76,6 +102,13 @@ public class Phim {
         this.anhPhim = anhPhim;
     }
     
+    public void setTrangThai(int trangThai) {
+        this.trangThai = trangThai;
+    }
+    
+    public void setDoTuoiChoPhep(String doTuoiChoPhep) {
+		this.doTuoiChoPhep = doTuoiChoPhep;
+	}
 }
 
 
