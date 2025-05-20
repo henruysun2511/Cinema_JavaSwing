@@ -8,5 +8,4 @@ public class GheController {
 	public static ArrayList<Ghe> layDanhSachGhe(String maSuatChieu){
 		return GheDao.layDanhSachGheTheoMaSuatChieu(maSuatChieu);
 	}
-
 }

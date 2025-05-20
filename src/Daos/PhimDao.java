@@ -1,7 +1,8 @@
 package Daos;
 import java.sql.*;
-import java.util.ArrayList;
 
+
+import java.util.ArrayList;
 import ConnectToDB.connectToQuanLyRapChieuPhimDB;
 import Models.Phim;
 
@@ -40,6 +41,35 @@ public class PhimDao {
 		
 		return dsPhim; //trả về list chứa mảng các đối tượng
 				
+	}
+	
+	public static Phim layPhimTheoMaPhim(String maPhim) {
+		Phim phim = null;
+		try {
+			Connection conn = connectToQuanLyRapChieuPhimDB.getConnection(); //kết nối sql
+			String sql = "Select * from tblMovie where movie_id = ?"; //câu lệnh sql
+			PreparedStatement stmt = conn.prepareStatement(sql); 
+			stmt.setString(1,maPhim);
+			ResultSet rs = stmt.executeQuery(); //chạy câu lệnh sql
+			
+			while(rs.next()) { 
+				 phim = new Phim(
+		                    rs.getString("movie_id"),
+		                    rs.getString("movie_name"),
+		                    rs.getString("release_date"),
+		                    rs.getString("director"),
+		                    rs.getInt("duration"),
+		                    rs.getString("script"),	
+		                    rs.getString("age_permisson"),	
+		                    rs.getString("poster"),
+		                    rs.getInt("status")
+		                );
+			}
+			conn.close();
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return phim;
 	}
 	
 	public static ArrayList<Phim> getPosterandNameOfMovieComingSoon(){

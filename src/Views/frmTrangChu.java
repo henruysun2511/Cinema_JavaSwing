@@ -35,7 +35,6 @@ public class frmTrangChu extends JFrame {
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setLocationRelativeTo(null);
         this.setVisible(true);
-        
     }
 
     public void addControls() {

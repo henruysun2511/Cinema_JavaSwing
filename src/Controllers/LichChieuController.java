@@ -3,7 +3,7 @@ package Controllers;
 import java.util.ArrayList;
 import java.sql.*;
 import java.sql.Date;
-import Daos.LichChieuDao;
+import Daos.*;
 import Models.*;
 
 public class LichChieuController {

@@ -1,8 +1,6 @@
 package Views;
+
 import javax.swing.*;
-
-
-
 import javax.swing.border.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -10,12 +8,7 @@ import java.text.*;
 import java.util.*;
 import java.sql.*;
 import java.sql.Date;
-
-import Controllers.GheController;
-import Controllers.LichChieuController;
-import Models.Phim;
-import Models.Ghe;
-import Models.LichChieu;
+import Models.*;
 import Controllers.*;
 
 public class frmDatVe extends JFrame {
@@ -162,9 +155,13 @@ public class frmDatVe extends JFrame {
 			btnGhe.setCursor(new Cursor(Cursor.HAND_CURSOR));
 			
 			pnGhe.add(btnGhe);
+
+			//Ghế vip thì màu cam
 			if(gh.getLoaiGhe().equals("ST002")) {
 				btnGhe.setBackground(Color.ORANGE);
 			}
+
+			//Ghế đôi màu hồng
 			if(gh.getLoaiGhe().equals("ST003")){
 				btnGhe.setBackground(Color.pink);
 			}
@@ -195,6 +192,7 @@ public class frmDatVe extends JFrame {
 		return pnThanhToan;
 	}
 
+	//Viết sự kiện cho cardLayout
 	public void addEvents() {
 		btnNext.addActionListener(new ActionListener() {
 		    public void actionPerformed(ActionEvent e) {

@@ -1,12 +1,9 @@
 package Daos;
 
 import java.util.ArrayList;
-
-
-
 import ConnectToDB.connectToQuanLyRapChieuPhimDB;
-
 import java.beans.Statement;
+import java.lang.foreign.PaddingLayout;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -24,7 +21,7 @@ public class LichChieuDao {
 			Connection conn = connectToQuanLyRapChieuPhimDB.getConnection();
 			String sql = "Select distinct showtime_day from tblShowTime";
 			PreparedStatement stmt = conn.prepareStatement(sql); 
-			ResultSet rs = stmt.executeQuery(); //thực hiện truy vấn từng dòng
+			ResultSet rs = stmt.executeQuery(); 
 			
 			while(rs.next()) {
 				dsNgayChieu.add(rs.getDate("showtime_day"));
@@ -92,6 +89,64 @@ public class LichChieuDao {
 		return dsLichChieuTheoPhimVaNgay;
 	}
 	
+	public static boolean themLichChieu(LichChieu l) {
+		try {
+			Connection conn = connectToQuanLyRapChieuPhimDB.getConnection();
+			String sql = "insert into tblShowTime values(?,?,?,?,?) ";
+			PreparedStatement stmt = conn.prepareStatement(sql);
+			stmt.setString(1, l.getMaLichChieu());
+			stmt.setTime(2, l.getKhungGioChieuString());
+			stmt.setString(3, l.getMaPhim());
+			stmt.setString(4, l.getMaPhong());
+			stmt.setDate(5, l.getNgayChieu());
+			
+			int rows = stmt.executeUpdate();
+            conn.close();
+            return rows > 0;
+			
+		}catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
 	
+	public static boolean suaLichChieu(LichChieu l) {
+		try {
+			Connection conn = connectToQuanLyRapChieuPhimDB.getConnection();
+			String sql = "update tblShowTime set SET movie_id = ?, showtime_day = ?, showtime = ?, room_id = ? WHERE showtime_id = ?";
+			PreparedStatement stmt = conn.prepareStatement(sql);
+	        
+	        // Set giá trị cho các tham số
+	        stmt.setString(1, l.getMaPhim());
+	        stmt.setDate(2, l.getNgayChieu());
+	        stmt.setTime(3, l.getKhungGioChieuString());
+	        stmt.setString(4, l.getMaPhong());
+	        stmt.setString(5, l.getMaLichChieu());
+			
+	        int rows = stmt.executeUpdate();
+            conn.close();
+            return rows > 0;
+			
+		}catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
+	public static boolean xoaNgayChieu(String maLichChieu) {
+	    try (Connection conn = connectToQuanLyRapChieuPhimDB.getConnection()) {
+	        String sql = "DELETE FROM tblShowTime WHERE showtime_id = ?";
+	        PreparedStatement stmt = conn.prepareStatement(sql);
+	        stmt.setString(1, maLichChieu);
 
+	        int rows = stmt.executeUpdate();
+            conn.close();
+            return rows > 0;
+            
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return false;
+	    }
+	   
+	}
 }
