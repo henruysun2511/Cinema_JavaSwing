@@ -1,6 +1,8 @@
 package Daos;
 
 import java.util.ArrayList;
+
+
 import ConnectToDB.connectToQuanLyRapChieuPhimDB;
 import java.beans.Statement;
 import java.lang.foreign.PaddingLayout;
@@ -87,6 +89,33 @@ public class LichChieuDao {
 			e.printStackTrace();
 		}
 		return dsLichChieuTheoPhimVaNgay;
+	}
+	
+	//Lấy danh sách lịch chiếu theo phòng và ngày
+	public static ArrayList<LichChieu> layDanhSachLichChieuTheoPhongVaNgay(String maPhong, Date ngayChieu){
+		ArrayList<LichChieu> dsLichChieuTheoPhongVaNgay = new ArrayList<LichChieu>();
+		try {
+			Connection conn= connectToQuanLyRapChieuPhimDB.getConnection();
+			String sql ="select * from tblShowTime where room_id = ? and showtime_day = ?";
+			PreparedStatement stmt = conn.prepareStatement(sql);
+			stmt.setString(1, maPhong);
+			stmt.setDate(2, new Date(ngayChieu.getTime()));
+			ResultSet rs = stmt.executeQuery();
+			
+			while(rs.next()) {
+				LichChieu l = new LichChieu(
+						rs.getString("showtime_id"),
+						rs.getTime("showtime"),
+						rs.getString("movie_id"),
+						rs.getString("room_id"),
+						rs.getDate("showtime_day")
+						);
+				dsLichChieuTheoPhongVaNgay.add(l);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return dsLichChieuTheoPhongVaNgay;
 	}
 	
 	public static boolean themLichChieu(LichChieu l) {

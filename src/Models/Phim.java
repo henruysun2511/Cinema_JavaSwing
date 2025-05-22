@@ -109,6 +109,11 @@ public class Phim {
     public void setDoTuoiChoPhep(String doTuoiChoPhep) {
 		this.doTuoiChoPhep = doTuoiChoPhep;
 	}
+    
+    @Override
+    public String toString() {
+        return this.tenPhim; 
+    }
 }
 
 

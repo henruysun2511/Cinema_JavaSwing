@@ -9,7 +9,7 @@ import Models.PhongChieu;
 
 public class PhongChieuDao {
 	//Lấy tất phòng chiếu
-	public static ArrayList<PhongChieu> layDanhSachPhongChieuu(){
+	public static ArrayList<PhongChieu> layDanhSachPhongChieu(){
 		ArrayList<PhongChieu> dsPhong = new ArrayList<>(); 
 		try {
 			Connection conn = connectToQuanLyRapChieuPhimDB.getConnection(); 
@@ -30,35 +30,52 @@ public class PhongChieuDao {
 		}catch (Exception e) {
 			e.printStackTrace();
 		}
-		
-		return dsPhong; 
-				
+		return dsPhong; 			
 	}
 	
-	// Hàm lấy phòng chiếu theo mã suất chiếu
-//    public static PhongChieu layPhongChieuTheoMaSuatChieu(String showtime_id) {
-//        PhongChieu phong = null;
-//        try (Connection conn = connectToQuanLyRapChieuPhimDB.getConnection()) {
-//            String sql = "SELECT * FROM tblShowTime st " +
-//                         "JOIN tblShowRoom sr ON st.room_id = sr.room_id " +
-//                         "WHERE st.showtime_id = ?";
-//            PreparedStatement stmt = conn.prepareStatement(sql);
-//            stmt.setString(1, showtime_id);
-//
-//            ResultSet rs = stmt.executeQuery();
-//
-//            if (rs.next()) {
-//                phong = new PhongChieu(
-//                    rs.getString("room_id"),
-//                    rs.getString("room_number"),
-//                    rs.getInt("seat_total"),
-//                    rs.getInt("format_id")
-//                );
-//            }
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//        return phong;
-//    }
+	public static PhongChieu layPhongChieuTheoMaPhong(String maPhong){
+		PhongChieu pc = null;
+		try {
+			Connection conn = connectToQuanLyRapChieuPhimDB.getConnection(); 
+			String sql = "Select * from tblShowRoom where room_id = ?";
+			PreparedStatement stmt = conn.prepareStatement(sql); 
+			stmt.setString(1, maPhong);
+			ResultSet rs = stmt.executeQuery(); 
+			
+			while(rs.next()) { 
+				 pc = new PhongChieu(
+		                    rs.getString("room_id"),
+		                    rs.getInt("room_number"),
+		                    rs.getInt("seat_total"),
+		                    rs.getString("format_id")
+		                );
+			}
+			conn.close();
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
 
+		return pc; 	
+	}
+	
+	public static String layMaPhongTheoTenPhong(int tenPhong) {
+	    String maPhong = null;
+	    try {
+	        Connection conn = connectToQuanLyRapChieuPhimDB.getConnection(); 
+	        String sql = "SELECT room_id FROM tblShowRoom WHERE room_number = ?";
+	        PreparedStatement stmt = conn.prepareStatement(sql);
+	        stmt.setInt(1, tenPhong);
+	        ResultSet rs = stmt.executeQuery();
+	        if (rs.next()) {
+	            maPhong = rs.getString("room_id");
+	        }
+	        rs.close();
+	        stmt.close();
+	        conn.close();
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	    return maPhong;
+	}
+	
 }

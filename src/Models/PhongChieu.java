@@ -52,6 +52,11 @@ public class PhongChieu {
 	public void setMaDinhDang(String maDinhDang) {
 		this.maDinhDang = maDinhDang;
 	}
+	
+	@Override
+    public String toString() {
+        return String.valueOf(this.tenPhong); 
+    }
 
     
 }

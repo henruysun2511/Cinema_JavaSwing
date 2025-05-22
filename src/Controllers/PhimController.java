@@ -7,5 +7,9 @@ public class PhimController {
 	public static ArrayList<Phim> layDanhSachPhim(){
 		return PhimDao.layPhimDangChieu();
 	}
+	
+	public static Phim layPhimTheoMaPhim(String maPhim) {
+		return PhimDao.layPhimTheoMaPhim(maPhim);
+	}
 
 }
