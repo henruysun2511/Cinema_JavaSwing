@@ -68,7 +68,7 @@ public class LichChieuDao {
 		ArrayList<LichChieu> dsLichChieuTheoPhimVaNgay = new ArrayList<LichChieu>();
 		try {
 			Connection conn = connectToQuanLyRapChieuPhimDB.getConnection();
-			String sql = "select showtime_id, showtime from tblShowTime where movie_id = ? and showtime_day = ? order by showtime asc";
+			String sql = "select showtime_id, showtime, movie_id, room_id, showtime_day from tblShowTime where movie_id = ? and showtime_day = ? order by showtime asc";
 			PreparedStatement stmt = conn.prepareStatement(sql); 
 			//truyền điều kiên
 			stmt.setString(1, maPhim); 
@@ -80,6 +80,9 @@ public class LichChieuDao {
 				LichChieu l = new LichChieu();
 				l.setMaLichChieu(rs.getString("showtime_id"));
 				l.setKhungGioChieuString(rs.getTime("showtime"));
+				l.setMaPhim(rs.getString("movie_id"));
+				l.setMaPhong(rs.getString("room_id"));
+				l.setNgayChieu(rs.getDate("showtime_day"));
 				
 				dsLichChieuTheoPhimVaNgay.add(l);				
 			}

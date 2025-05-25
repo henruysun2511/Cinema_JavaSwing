@@ -156,7 +156,7 @@ public class pnShowTime extends JPanel {
 		btnXoa = new JButton("Xóa");
 		btnLuu = new JButton("Lưu");
 		btnHuy = new JButton("Hủy");
-		btnThoat = new JButton("Thoát");
+		btnThoat = new JButton("Tìm kiếm");
 		
 		btnThem.setBackground(Color.decode("#FFBD59"));
 		btnSua.setBackground(Color.decode("#FFBD59"));

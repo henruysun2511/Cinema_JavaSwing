@@ -1,5 +1,6 @@
 package Views;
 import javax.swing.*;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
@@ -9,9 +10,9 @@ import Daos.PhimDao;
 import Models.Phim;
 import Controllers.PhimController;
 
-public class frmTrangChu extends JFrame {
+public class HomePagePanel extends JPanel {
     private JMenuBar menuBar;
-    private JMenu mnuPhim, mnuLichChieu, mnuGioiThieu, mnuGiaVe;
+    //private JMenu mnuPhim, mnuLichChieu, mnuGioiThieu, mnuGiaVe;
     private JButton btnPrev, btnNext;
     private JLabel lblImage;
     private String[] images = {
@@ -19,38 +20,18 @@ public class frmTrangChu extends JFrame {
         "F:/Cinema_JavaSwing/images/carousel/minecraft-2048_1743651882260.jpg",
     };
     JPanel pnPhim;
-   
-    
+    CardLayout cardLayout;
+    JPanel mainContentPanel;
     private int currentImageIndex = 0;
 
-    public frmTrangChu(String tieude) {
-        super(tieude);
+    public HomePagePanel(CardLayout cardLayout, JPanel mainContentPanel) {
+    	this.cardLayout = cardLayout;
+        this.mainContentPanel = mainContentPanel;
         addControls();
-        showWindow();
         addEvents();
     }
 
-    public void showWindow() {
-        this.setSize(1200, 600);
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.setLocationRelativeTo(null);
-        this.setVisible(true);
-    }
-
     public void addControls() {
-        // Tạo menu bar
-        menuBar = new JMenuBar();
-        mnuPhim = new JMenu("Phim");
-        mnuLichChieu = new JMenu("Lịch Chiếu");
-        mnuGioiThieu = new JMenu("Giới Thiệu");
-        mnuGiaVe = new JMenu("Giá Vé");
-
-        menuBar.add(mnuPhim);
-        menuBar.add(mnuLichChieu);
-        menuBar.add(mnuGioiThieu);
-        menuBar.add(mnuGiaVe);
-        setJMenuBar(menuBar);
-
         // Tạo các nút điều khiển
         btnPrev = new JButton("<");
         btnNext = new JButton(">");
@@ -106,8 +87,6 @@ public class frmTrangChu extends JFrame {
         pnCenter2.add(pnRightofCenter2);
         
         
-       
-        
         //Main chứa tất pn con
         JPanel pnMain = new JPanel();
         
@@ -115,28 +94,14 @@ public class frmTrangChu extends JFrame {
         pnMain.add(pnTop, BorderLayout.NORTH);
         pnMain.add(pnCenter,BorderLayout.CENTER);
         pnMain.add(pnCenter2,BorderLayout.SOUTH);
-        
-        
+                
         JScrollPane scp = new JScrollPane(pnMain,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
         
-
-        // Thêm panel vào frame
-        Container con = getContentPane();
-        con.setLayout(new BorderLayout());
-        con.add(scp,BorderLayout.CENTER);         
+        this.setLayout(new BorderLayout());
+        this.add(scp, BorderLayout.CENTER);       
     }
     
     public void addEvents(){
-        //Điều hướng sang các form khác trong menu
-        mnuLichChieu.addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent e) {
-                frmLichChieu LichChieu = new frmLichChieu("Lịch chiếu");        
-            }       
-            public void mouseEntered(MouseEvent e) {
-                
-            }
-        });
-
         btnPrev.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 showPrevImage();
@@ -174,6 +139,7 @@ public class frmTrangChu extends JFrame {
         updateImage();
     }
     
+    //Hiển thị danh sách phim đang chiếu
     ArrayList<Phim> dsPhim = PhimController.layDanhSachPhim();
     JLabel lblPoster;
     public JPanel hienThiDanhSachPhim() {
@@ -193,7 +159,6 @@ public class frmTrangChu extends JFrame {
     		
     		//Tên phim
     		JLabel lblTenPhim = new JLabel(p.getTenPhim());
-
     		
     		pnPhimItem.add(lblPoster);
     		pnPhimItem.add(lblTenPhim);
@@ -203,7 +168,10 @@ public class frmTrangChu extends JFrame {
     		//Thêm sự kiện khi ấn vô poster sẽ hiện frame chi tiết phim của phim đấy
     		lblPoster.addMouseListener(new MouseAdapter() {
                 public void mouseClicked(MouseEvent e) {
-                    new frmChiTietPhim(p);
+                    //new frmChiTietPhim(p);
+					MovieDetailPanel pnlChiTiet = new MovieDetailPanel(p);
+	                mainContentPanel.add(pnlChiTiet, "CHI_TIET");
+	                cardLayout.show(mainContentPanel, "CHI_TIET");
                 }
             
                 public void mouseEntered(MouseEvent e) {
@@ -213,10 +181,5 @@ public class frmTrangChu extends JFrame {
     		  		
     	}
     	return pnPhim;   	
-    }
-
-
-    public static void main(String[] args) {
-        new frmTrangChu("Chào mừng đến với rạp chiếu phim BingeBox Cinema");
     }
 }

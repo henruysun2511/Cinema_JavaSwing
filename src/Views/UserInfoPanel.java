@@ -5,43 +5,19 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.border.TitledBorder;
 
-public class frmThongTinKhachHang extends JFrame {
+public class UserInfoPanel extends JPanel {
     private JMenuBar menuBar;
     private JMenu mnuTrangChu, mnuPhim, mnuLichChieu, mnuGiaVe, mnuThoat;
     private JTextField txtMaKH, txtTenKH, txtSDT, txtEmail, txtDiaChi;
     private JButton btnLuu, btnXoa, btnThoat;
 
-    public frmThongTinKhachHang(String title) {
-        super(title);
+    public UserInfoPanel() {
         addControls();
         addEvents();
-        showWindow();
     }
 
-    private void showWindow() {
-        this.setSize(600, 400);
-        this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); 
-        this.setLocationRelativeTo(null);
-        this.setVisible(true);
-    }
 
     private void addControls() {
-        // Menu bar
-        menuBar = new JMenuBar();
-        mnuTrangChu = new JMenu("Trang Chủ");
-        mnuPhim = new JMenu("Phim");
-        mnuLichChieu = new JMenu("Lịch Chiếu");
-        mnuGiaVe = new JMenu("Giá Vé");
-        mnuThoat = new JMenu("Thoát");
-
-        menuBar.add(mnuTrangChu);
-        menuBar.add(mnuPhim);
-        menuBar.add(mnuLichChieu);
-        menuBar.add(mnuGiaVe);
-        menuBar.add(mnuThoat);
-
-        setJMenuBar(menuBar);
-
         // Panel chính
         JPanel pnMain = new JPanel(new BorderLayout());
 
@@ -87,21 +63,6 @@ public class frmThongTinKhachHang extends JFrame {
     }
 
     private void addEvents() {
-        // Menu điều hướng
-        mnuTrangChu.addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent e) {
-                new frmTrangChu("Trang Chủ").setVisible(true);
-                dispose();
-            }
-        });
-
-        mnuThoat.addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent e) {
-                dispose();
-            }
-        });
-
-        // Nút chức năng
         btnLuu.addActionListener(e -> {
             String thongTin = "Mã: " + txtMaKH.getText()
                     + "\nTên: " + txtTenKH.getText()
@@ -120,10 +81,6 @@ public class frmThongTinKhachHang extends JFrame {
             txtDiaChi.setText("");
         });
 
-        btnThoat.addActionListener(e -> dispose());
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new frmThongTinKhachHang("Thông Tin Khách Hàng"));
-    }
 }

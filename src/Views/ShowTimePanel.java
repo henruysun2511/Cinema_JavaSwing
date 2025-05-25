@@ -13,23 +13,18 @@ import Models.Phim;
 import Models.LichChieu;
 
 
-public class frmLichChieu extends JFrame {
+public class ShowTimePanel extends JPanel {
 	JPanel pnMain;
 	JPanel pnCenter;
 	JPanel pnPhim;
+	JPanel mainContentPanel;
+	CardLayout cardLayout;
 
 	
-    public frmLichChieu(String tieude) {
-        super(tieude);
+    public ShowTimePanel(CardLayout cardLayout, JPanel mainContentPanel) {
+    	this.cardLayout = cardLayout;
+        this.mainContentPanel = mainContentPanel;
         addControls();
-        showWindow();
-    }
-
-    public void showWindow() {
-        this.setSize(1200, 600);
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.setLocationRelativeTo(null);
-        this.setVisible(true);
     }
 
     public void addControls() {	
@@ -69,11 +64,10 @@ public class frmLichChieu extends JFrame {
         
     	pnMain.add(pnThoat,BorderLayout.SOUTH);
     	
-    	Container con = getContentPane();
-    	con.setLayout(new BorderLayout());
-    	con.add(scp, BorderLayout.CENTER);
-
+    	this.setLayout(new BorderLayout());
+    	this.add(scp,BorderLayout.CENTER);
     }
+    
     public JPanel hienThiNgayChieu() {
     	JPanel pnButton = new JPanel();
     	pnButton.setLayout(new FlowLayout());
@@ -99,7 +93,6 @@ public class frmLichChieu extends JFrame {
     	}  	
     	return pnButton;
     } 
-    
     
     public JPanel hienThiPhimTheoNgayChieu(Date ngayChieu) {
     	pnPhim = new JPanel();
@@ -145,8 +138,10 @@ public class frmLichChieu extends JFrame {
     			btnLichChieu.addActionListener(new ActionListener() {				
 					@Override
 					public void actionPerformed(ActionEvent e) {
-						new frmDatVe(l);
-						
+						//new frmDatVe(l);
+						BookingControllPanel bookingControllPanel = new BookingControllPanel(l);
+						mainContentPanel.add(bookingControllPanel, "DAT_VE");
+						cardLayout.show(mainContentPanel, "DAT_VE");	
 					}
 				});
     		}
