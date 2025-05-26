@@ -194,16 +194,12 @@ public class SeatPanel extends JPanel {
 		//Ghế
 		JLabel lblGheChon = new JLabel("Ghế: "); 
 		
-
-
 				
 		pnMain.add(pnThongTinPhim);
 		pnMain.add(lblPhong);
 		pnMain.add(lblSuatChieu);
 
 		
-		
 		return pnMain;
 	}
-
 }
