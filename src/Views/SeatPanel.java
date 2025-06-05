@@ -1,12 +1,21 @@
 package Views;
 
 import java.awt.*;
+import java.util.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import javax.swing.*;
 import Controllers.*;
 import Models.*;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 
 public class SeatPanel extends JPanel {
@@ -57,7 +66,7 @@ public class SeatPanel extends JPanel {
 		pnChonGhe.add(lblChonGhe);
 		
 		//Danh sách ghế
-		pnChonGhe.add(hienThiDanhSachGhe(l));
+		pnChonGhe.add(hienThiDanhSachGhe(l,panelThongTinVe));
 		
 		//Chú thích
 		JPanel pnChuThich = new JPanel();
@@ -112,94 +121,171 @@ public class SeatPanel extends JPanel {
 		return pnChonGhe;
 	}
 	
-	public JPanel hienThiDanhSachGhe(LichChieu l) {
-		ArrayList<Ghe> dsGhe = GheController.layDanhSachGhe(l.getMaLichChieu());
-		JPanel pnGhe = new JPanel();
-		String maPhong = dsGhe.get(0).getMaPhong(); 
-		if (maPhong.equals("RM007")) {
-		    pnGhe.setLayout(new GridLayout(32, 28, 1, 1));
-		} else {
-		    pnGhe.setLayout(new GridLayout(10, 14, 2, 2)); // mặc định
-		}
+	public JPanel hienThiDanhSachGhe(LichChieu l, JPanel panelThongTinVe) {
+	    ArrayList<Ghe> dsGhe = GheController.layDanhSachGhe(l.getMaLichChieu());
+	    JPanel pnGhe = new JPanel();
+	    String maPhong = dsGhe.get(0).getMaPhong();
 
-		
-		pnGhe.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // padding
-		pnGhe.setPreferredSize(new Dimension(600, 600)); 
-		
-		for(Ghe gh : dsGhe) {
-			JButton btnGhe = new JButton(gh.getTenGhe());
-			btnGhe.setCursor(new Cursor(Cursor.HAND_CURSOR));
-			
-			pnGhe.add(btnGhe);
+	    if (maPhong.equals("RM007")) {
+	        pnGhe.setLayout(new GridLayout(14, 20, 1, 1));
+	        pnGhe.setPreferredSize(new Dimension(1200, 700));
+	    } else {
+	        pnGhe.setLayout(new GridLayout(10, 14, 2, 2));
+	        pnGhe.setPreferredSize(new Dimension(700, 500));
+	    }
 
-			if (gh.getLoaiGhe().equals("ST002")) {
-		        btnGhe.setBackground(Color.ORANGE); // VIP
-		    } else if (gh.getLoaiGhe().equals("ST003")) {
-		        btnGhe.setBackground(Color.PINK);   // Ghế đôi
-		    } else {
-		        btnGhe.setBackground(null);         // Ghế thường
-		    }
-			
-			//Lưu màu vào ghế
-			btnGhe.putClientProperty("originalColor", btnGhe.getBackground());
-			btnGhe.addActionListener(new ActionListener() {
-			        private boolean isSelected = false;
-			        @Override
-			        public void actionPerformed(ActionEvent e) {
-			            isSelected = !isSelected;
+	    Map<Integer, JButton> indexToButton = new HashMap<>();
+	    Map<Integer, Ghe> indexToGhe = new HashMap<>();
+	    Set<Ghe> gheDangChon = new LinkedHashSet<>();
 
-			            if (isSelected) {
-			                btnGhe.setBackground(Color.GREEN); // Chọn
-			            } else {
-			                Color originalColor = (Color) btnGhe.getClientProperty("originalColor");
-			                btnGhe.setBackground(originalColor); // Trả lại màu gốc
-			            }
-			        }
-			    });
-		}
-		return pnGhe;
+	    for (int i = 0; i < dsGhe.size(); i++) {
+	        Ghe gh = dsGhe.get(i);
+	        JButton btnGhe = new JButton(gh.getTenGhe());
+	        btnGhe.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+	        if (maPhong.equals("RM007")) {
+	            btnGhe.setFont(new Font("Arial", Font.BOLD, 9));
+	        }
+
+	        if (gh.getLoaiGhe().equals("ST002")) {
+	            btnGhe.setBackground(Color.ORANGE); // VIP
+	        } else if (gh.getLoaiGhe().equals("ST003")) {
+	            btnGhe.setBackground(Color.PINK);   // Ghế đôi
+	        } else {
+	            btnGhe.setBackground(null);         // Ghế thường
+	        }
+
+	        btnGhe.putClientProperty("originalColor", btnGhe.getBackground());
+
+	        indexToButton.put(i, btnGhe);
+	        indexToGhe.put(i, gh);
+	        pnGhe.add(btnGhe);
+	    }
+
+	    for (int i = 0; i < dsGhe.size(); i++) {
+	        final int index = i;
+	        JButton btnGhe = indexToButton.get(index);
+	        Ghe ghe = indexToGhe.get(index);
+
+	        btnGhe.addActionListener(e -> {
+	            boolean dangChon = gheDangChon.contains(ghe);
+
+	            if (ghe.getLoaiGhe().equals("ST003")) {
+	                int pairIndex = (index % 2 == 0) ? index + 1 : index - 1;
+
+	                if (indexToButton.containsKey(pairIndex)) {
+	                    JButton pairBtn = indexToButton.get(pairIndex);
+	                    Ghe pairGhe = indexToGhe.get(pairIndex);
+
+	                    if (pairGhe.getLoaiGhe().equals("ST003")) {
+	                        if (!dangChon) {
+	                            gheDangChon.add(ghe);
+	                            gheDangChon.add(pairGhe);
+	                            btnGhe.setBackground(Color.GREEN);
+	                            pairBtn.setBackground(Color.GREEN);
+	                        } else {
+	                            gheDangChon.remove(ghe);
+	                            gheDangChon.remove(pairGhe);
+	                            btnGhe.setBackground((Color) btnGhe.getClientProperty("originalColor"));
+	                            pairBtn.setBackground((Color) pairBtn.getClientProperty("originalColor"));
+	                        }
+	                    }
+	                }
+	            } else {
+	                if (!dangChon) {
+	                    gheDangChon.add(ghe);
+	                    btnGhe.setBackground(Color.GREEN);
+	                } else {
+	                    gheDangChon.remove(ghe);
+	                    btnGhe.setBackground((Color) btnGhe.getClientProperty("originalColor"));
+	                }
+	            }
+
+	            capNhatThongTinVe(panelThongTinVe, l, gheDangChon);
+	        });
+	    }
+
+	    return pnGhe;
 	}
 	
+	JPanel panelThongTinVe;
 	public JPanel HienThiThongTinVe(LichChieu l) {
-		JPanel pnMain = new JPanel();
-		pnMain.setLayout(new BoxLayout(pnMain, BoxLayout.Y_AXIS));
-		
-		JPanel pnThongTinPhim = new JPanel();
-		pnThongTinPhim.setLayout(new BoxLayout(pnThongTinPhim, BoxLayout.Y_AXIS));
-		
-		//Lấy thông tin phim từ suất chiếu
-		Phim p = PhimController.layPhimTheoMaPhim(l.getMaPhim());
-		ImageIcon imageIcon = new ImageIcon(p.getAnhPhim());
-		Image image = imageIcon.getImage(); 
-		Image scaledImage = image.getScaledInstance(170, 230, Image.SCALE_SMOOTH);
-		ImageIcon scaledIcon = new ImageIcon(scaledImage);
-		JLabel lblPoster = new JLabel(scaledIcon);
-		JLabel lblTenPhim = new JLabel(p.getTenPhim());
-		lblTenPhim.setFont(new Font("", Font.BOLD, 20));
-		JLabel lblThoiLuong = new JLabel(String.valueOf(p.getThoiLuong()) + " phút - "+ p.getDoTuoiChoPhep());
-		lblThoiLuong.setFont(new Font("", Font.PLAIN, 15));
-		pnThongTinPhim.add(lblPoster);
-		pnThongTinPhim.add(lblTenPhim);
-		pnThongTinPhim.add(lblThoiLuong);
-		
-		//Lấy thông tin phòng từ suất chiếu
-		PhongChieu ph = PhongChieuController.layPhongChieuTheoMaPhongChieu(l.getMaPhong());
-		JLabel lblPhong = new JLabel("Phòng: "+ph +" - Định dạng: "+ph.getMaDinhDang());
-		lblPhong.setFont(new Font("", Font.PLAIN, 15));
-		
-		//Thông tin suất chiếu
-		JLabel lblSuatChieu = new JLabel("Suất: "+ l.getKhungGioChieuString() + " - Ngày: " + l.getNgayChieu());
-		lblSuatChieu.setFont(new Font("", Font.PLAIN, 15));
-		
-		//Ghế
-		JLabel lblGheChon = new JLabel("Ghế: "); 
-		
-				
-		pnMain.add(pnThongTinPhim);
-		pnMain.add(lblPhong);
-		pnMain.add(lblSuatChieu);
+	    panelThongTinVe = new JPanel();
+	    panelThongTinVe.setLayout(new BoxLayout(panelThongTinVe, BoxLayout.Y_AXIS));
+	    panelThongTinVe.putClientProperty("gheDaChon", new LinkedHashSet<Ghe>());
 
-		
-		return pnMain;
+	    // Thông tin phim
+	    Phim p = PhimController.layPhimTheoMaPhim(l.getMaPhim());
+	    ImageIcon scaledIcon = new ImageIcon(p.getAnhPhim());
+	    JLabel lblPoster = new JLabel(new ImageIcon(scaledIcon.getImage().getScaledInstance(170, 230, Image.SCALE_SMOOTH)));
+
+	    JLabel lblTenPhim = new JLabel(p.getTenPhim());
+	    lblTenPhim.setFont(new Font("", Font.BOLD, 20));
+
+	    JLabel lblThoiLuong = new JLabel(p.getThoiLuong() + " phút - " + p.getDoTuoiChoPhep());
+	    lblThoiLuong.setFont(new Font("", Font.PLAIN, 15));
+
+	    JPanel pnThongTinPhim = new JPanel();
+	    pnThongTinPhim.setLayout(new BoxLayout(pnThongTinPhim, BoxLayout.Y_AXIS));
+	    pnThongTinPhim.add(lblPoster);
+	    pnThongTinPhim.add(lblTenPhim);
+	    pnThongTinPhim.add(lblThoiLuong);
+
+	    // Phòng chiếu
+	    PhongChieu ph = PhongChieuController.layPhongChieuTheoMaPhongChieu(l.getMaPhong());
+	    JLabel lblPhong = new JLabel("Phòng: " + ph + " - Định dạng: " + ph.getMaDinhDang());
+	    JLabel lblSuatChieu = new JLabel("Suất: " + l.getKhungGioChieuString() + " - Ngày: " + l.getNgayChieu());
+
+	    lblPhong.setFont(new Font("", Font.PLAIN, 15));
+	    lblSuatChieu.setFont(new Font("", Font.PLAIN, 15));
+
+	    panelThongTinVe.add(pnThongTinPhim);
+	    panelThongTinVe.add(lblPhong);
+	    panelThongTinVe.add(lblSuatChieu);
+
+	    return panelThongTinVe;
+	}
+
+	public void capNhatThongTinVe(JPanel panel, LichChieu l, Set<Ghe> gheDaChon) {
+	    // Xoá tất cả các component từ ghế trở đi
+	    while (panel.getComponentCount() > 3) {
+	        panel.remove(3);
+	    }
+
+	    Map<String, List<Ghe>> gheTheoLoai = new LinkedHashMap<>();
+	    for (Ghe g : gheDaChon) {
+	        gheTheoLoai.computeIfAbsent(g.getLoaiGhe(), k -> new ArrayList<>()).add(g);
+	    }
+
+	    int tongTien = 0;
+	    for (Map.Entry<String, List<Ghe>> entry : gheTheoLoai.entrySet()) {
+	        String maLoai = entry.getKey();
+	        List<Ghe> gheList = entry.getValue();
+
+	        LoaiGhe lg = GheController.layLoaiGheTheoMa(maLoai);
+	        double gia = lg.getGiaGhe();
+	        int soLuong = gheList.size();
+	        double tien = gia * soLuong;
+	        tongTien += tien;
+
+	        String tenLoai = switch (maLoai) {
+	            case "ST002" -> "Ghế VIP";
+	            case "ST003" -> "Ghế đôi";
+	            default -> "Ghế thường";
+	        };
+
+	        String tenGhe = gheList.stream().map(Ghe::getTenGhe).collect(Collectors.joining(", "));
+	        JLabel lbl = new JLabel(tenLoai + ": " + tenGhe + "x" + soLuong+ "    " + tien +"đ");
+	        lbl.setFont(new Font("", Font.PLAIN, 14));
+	        panel.add(lbl);
+	    }
+
+	    JLabel lblTong = new JLabel("Tổng tiền: " + tongTien + "đ");
+	    lblTong.setFont(new Font("", Font.BOLD, 16));
+	    lblTong.setForeground(Color.RED);
+	    panel.add(lblTong);
+
+	    panel.revalidate();
+	    panel.repaint();
 	}
 }

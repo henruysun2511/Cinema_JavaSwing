@@ -139,7 +139,7 @@ public class ShowTimePanel extends JPanel {
 					@Override
 					public void actionPerformed(ActionEvent e) {
 						//new frmDatVe(l);
-						BookingControllPanel bookingControllPanel = new BookingControllPanel(l);
+						BookingControlPanel bookingControllPanel = new BookingControlPanel(l);
 						mainContentPanel.add(bookingControllPanel, "DAT_VE");
 						cardLayout.show(mainContentPanel, "DAT_VE");	
 					}

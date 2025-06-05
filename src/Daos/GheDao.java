@@ -5,7 +5,7 @@ import java.sql.*;
 
 import ConnectToDB.connectToQuanLyRapChieuPhimDB;
 import Models.Ghe;
-
+import Models.LoaiGhe;
 
 
 public class GheDao {
@@ -36,5 +36,6 @@ public class GheDao {
 		}
 		return dsGhe;
 	}
+	
 
 }

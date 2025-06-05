@@ -2,6 +2,8 @@ package Views;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
+import java.awt.Color;
+import java.awt.Dimension;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -9,12 +11,12 @@ import javax.swing.JPanel;
 
 import Models.LichChieu;
 
-public class BookingControllPanel extends JPanel {
+public class BookingControlPanel extends JPanel {
 	JPanel mainContentPanel;
 	CardLayout cardLayout;
 	JButton btnPrev, btnNext;
 	
-	public BookingControllPanel(LichChieu l) {
+	public BookingControlPanel(LichChieu l) {
 		addControls(l);
 		addEvents();
 	}
@@ -24,12 +26,12 @@ public class BookingControllPanel extends JPanel {
         mainContentPanel = new JPanel(cardLayout);
         
         mainContentPanel.add(new SeatPanel(l), "1");
-//        mainContentPanel.add(new PaymentPanel(), "2"); 
+        mainContentPanel.add(new PaymentPanel(l), "2"); 
 //        mainContentPanel.add(new TicketBillPanel(), "3");
         
         
         
-        
+		//bên dưới chứa button điều hướng
         JPanel pnButton = new JPanel();
 		pnButton.setLayout(new BorderLayout());
 		pnButton.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
