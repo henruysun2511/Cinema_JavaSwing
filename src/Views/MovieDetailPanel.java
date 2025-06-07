@@ -11,7 +11,6 @@ import Utilzs.GradientPanel;
 
 
 public class MovieDetailPanel extends JPanel {
-	JButton btnDatVe;
 
 	public MovieDetailPanel(Phim p) {
 		addControls(p);
@@ -111,23 +110,11 @@ public class MovieDetailPanel extends JPanel {
 		pnCenter.add(scrollNoiDung);
 		pnCenter.add(scrollDienVien);
 
-		// ======= BOTTOM: Nút =======
-		JPanel pnButton = new JPanel(new FlowLayout(FlowLayout.CENTER, 40, 10));
-		pnButton.setOpaque(false);
-		btnDatVe = new JButton("Đặt vé ngay");
 
-		Font buttonFont = new Font("Arial", Font.BOLD, 16);
-		btnDatVe.setFont(buttonFont);
-		btnDatVe.setBackground(new Color(220, 53, 69)); // Màu đỏ nổi bật
-		btnDatVe.setForeground(Color.WHITE);
-		btnDatVe.setFocusPainted(false);
-
-		pnButton.add(btnDatVe);
 
 		// ======= Thêm vào giao diện chính =======
 		pnMain.add(pnTop, BorderLayout.NORTH);
 		pnMain.add(pnCenter, BorderLayout.CENTER);
-		pnMain.add(pnButton, BorderLayout.SOUTH);
 
 		JScrollPane scp = new JScrollPane(pnMain, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
 				JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
@@ -137,14 +124,6 @@ public class MovieDetailPanel extends JPanel {
 		this.add(scp, BorderLayout.CENTER);
 	}
 
-	public void addEvents() {
-		btnDatVe.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-
-			}
-		});
-	}
+	public void addEvents() {}
 
 }

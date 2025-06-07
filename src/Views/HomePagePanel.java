@@ -8,7 +8,9 @@ import java.util.*;
 import javax.swing.border.TitledBorder;
 
 import Models.Phim;
+import Models.Voucher;
 import Controllers.PhimController;
+import Controllers.VoucherController;
 import Utilzs.GradientPanel;
 
 public class HomePagePanel extends JPanel {
@@ -68,6 +70,8 @@ public class HomePagePanel extends JPanel {
         borderRight.setTitleFont(new Font("Arial", Font.BOLD, 16));
         pnRightofCenter.setBorder(borderRight); // Thêm viền khuyến mãi
         pnRightofCenter.setPreferredSize(new Dimension(200, 1000));
+        pnRightofCenter.setLayout(new BorderLayout());
+        pnRightofCenter.add(hienThiDanhSachVoucher(), BorderLayout.CENTER);
 
         pnCenter.add(pnLeftofCenter);
         pnCenter.add(pnRightofCenter);
@@ -200,5 +204,35 @@ public class HomePagePanel extends JPanel {
 
         }
         return pnPhim;
+    }
+    
+    ArrayList<Voucher> dsVoucher = VoucherController.layDanhSachVoucher();
+    public JPanel hienThiDanhSachVoucher() {
+        JPanel pnMain = new JPanel();
+        pnMain.setLayout(new BoxLayout(pnMain, BoxLayout.Y_AXIS));
+        pnMain.setOpaque(false);
+
+        int gap = 10; // khoảng cách giữa các ảnh
+
+        for (Voucher vc : dsVoucher) {
+            JLabel imageLabel = new JLabel();
+            ImageIcon originalIcon = new ImageIcon(vc.getAnhVoucher());
+            Image scaledImage = originalIcon.getImage().getScaledInstance(200, 150, Image.SCALE_SMOOTH);
+            imageLabel.setIcon(new ImageIcon(scaledImage));
+            imageLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, gap, 0));
+            imageLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+
+            imageLabel.addMouseListener(new MouseAdapter() {
+                public void mouseClicked(MouseEvent e) {
+                    PromotionDetailPanel promotionDetailPanel = new PromotionDetailPanel(vc);
+                    mainContentPanel.add(promotionDetailPanel, "CHI_TIET_KHUYEN_MAI");
+                    cardLayout.show(mainContentPanel, "CHI_TIET_KHUYEN_MAI");
+                }
+            });
+
+            pnMain.add(imageLabel);
+        }
+
+        return pnMain;
     }
 }

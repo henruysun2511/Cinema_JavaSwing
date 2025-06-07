@@ -34,7 +34,7 @@ public class TicketBillPanel extends JPanel {
         pnMain.add(tablePanel, BorderLayout.CENTER);
         JPanel hoaDonPanel = hienThiThongTinHoaDon(maHoaDonVe);
         hoaDonPanel.setPreferredSize(new Dimension(300, 0));
-        pnMain.add(hoaDonPanel, BorderLayout.EAST);
+//        pnMain.add(hoaDonPanel, BorderLayout.EAST);
 
         this.add(pnMain, BorderLayout.CENTER);
     }

@@ -163,11 +163,10 @@ public class UserInfoPanel extends JPanel {
 
         btnLuu = createActionButton("Lưu", new Color(40, 167, 69));
         btnXoa = createActionButton("Xóa", new Color(220, 53, 69));
-        btnThoat = createActionButton("Đóng", new Color(108, 117, 125));
-
+      
         pnButtons.add(btnLuu);
         pnButtons.add(btnXoa);
-        pnButtons.add(btnThoat);
+      
 
         // ======== Add to Main Panel ========
         GridBagConstraints gbcMain = new GridBagConstraints();
