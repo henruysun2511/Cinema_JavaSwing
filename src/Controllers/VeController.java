@@ -21,6 +21,7 @@ public class VeController {
     public static Ve layVeTheoMaVe(String maVe) {
     	return VeDao.layVeTheoMaVe(maVe);
     }
+    
 
     public static boolean themVe(Ve ve) {
         return VeDao.themVe(ve);
@@ -33,5 +34,9 @@ public class VeController {
 
     public static HoaDonVe layHoaDonVeTheoMaHoaDonVe(String maHoaDonVe) {
         return VeDao.layHoaDonVeTheoMaHoaDonVe(maHoaDonVe);
+    }
+    
+    public static ArrayList<HoaDonVe> layDanhSachHoaDonVeTheoMaNguoiDung(String maNguoiDung){
+    	return VeDao.layDanhSachHoaDonVeTheoMaNguoiDung(maNguoiDung);
     }
 }

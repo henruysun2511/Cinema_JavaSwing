@@ -138,14 +138,6 @@ public class MovieDetailPanel extends JPanel {
 	}
 
 	public void addEvents() {
-		// btnThoat.addActionListener(new ActionListener() {
-		//
-		// @Override
-		// public void actionPerformed(ActionEvent e) {
-		// dispose();
-		// }
-		// });
-
 		btnDatVe.addActionListener(new ActionListener() {
 
 			@Override

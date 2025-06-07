@@ -40,7 +40,7 @@ public class ClientFrame extends JFrame {
 
         mainContentPanel.add(new HomePagePanel(cardLayout, mainContentPanel), "TRANG_CHU");
         mainContentPanel.add(new ShowTimePanel(cardLayout, mainContentPanel), "LICH_CHIEU");
-         mainContentPanel.add(new PromotionPanel(), "KHUYEN_MAI");
+         mainContentPanel.add(new PromotionPanel(cardLayout, mainContentPanel), "KHUYEN_MAI");
 //        mainContentPanel.add(new GioiThieuPanel(), "GIOI_THIEU");
         mainContentPanel.add(new UserInfoPanel(), "THONG_TIN_CA_NHAN");
 

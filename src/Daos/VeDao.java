@@ -61,6 +61,33 @@ public class VeDao {
         }
         return dsVe;
     }
+    
+    public static ArrayList<HoaDonVe> layDanhSachHoaDonVeTheoMaNguoiDung(String maNguoiDung) {
+        ArrayList<HoaDonVe> dsHoaDonVe = new ArrayList<>();
+        try {
+            Connection conn = connectToQuanLyRapChieuPhimDB.getConnection();
+            String sql = "SELECT *\r\n"
+            		+ "FROM tblTicketBill\r\n"
+            		+ "WHERE user_id = ?;";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setString(1, maNguoiDung);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                HoaDonVe hdv = new HoaDonVe();
+                hdv.setMaThanhToan(rs.getString("payment_id"));
+                hdv.setLichSuGiaoDich(rs.getTimestamp("transaction_history"));
+                hdv.setSoLuongVe(rs.getInt("ticket_quantity"));
+                hdv.setTongThanhToan(rs.getFloat("price_total"));
+                hdv.setMaNguoiDung(rs.getString("user_id"));
+                dsHoaDonVe.add(hdv);
+            }
+            conn.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return dsHoaDonVe;
+    }
 
     public static ArrayList<Ve> layDanhSachVeTheoMaHoaDon(String maHoaDonVe) {
         ArrayList<Ve> dsVe = new ArrayList<Ve>();

@@ -13,107 +13,99 @@ import java.awt.event.ActionListener;
 import java.net.URL;
 import java.util.ArrayList;
 import Models.*;
+import Utilzs.GradientPanel;
 
 public class PromotionPanel extends JPanel {
+	CardLayout cardLayout;
+    JPanel mainContentPanel;
 
-    public PromotionPanel() {
-        setLayout(new BorderLayout());
-        setBorder(new EmptyBorder(20, 20, 20, 20));
+	public PromotionPanel(CardLayout cardLayout, JPanel mainContentPanel) {
+		this.cardLayout = cardLayout;
+        this.mainContentPanel = mainContentPanel;
+        addControls();
+    }
+	public void addControls() {
+         setLayout(new BorderLayout());
+        
+        JPanel pnMain = new GradientPanel(new Color(10, 10, 30), new Color(60, 30, 180));
+        pnMain.setLayout(new BorderLayout());
 
-        // Tiêu đề của panel
         JLabel titleLabel = new JLabel("Ưu Đãi Đặc Biệt", SwingConstants.CENTER);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 28));
-        titleLabel.setForeground(new Color(51, 51, 51));
-        add(titleLabel, BorderLayout.NORTH);
+        titleLabel.setForeground(Color.white);
+        titleLabel.setOpaque(false);
+        pnMain.add(titleLabel, BorderLayout.NORTH);
 
-        // Panel chứa các ô khuyến mãi
-
-        // Thêm các khuyến mãi vào grid
-
-        // Cuộn nếu nội dung quá lớn
         JScrollPane scrollPane = new JScrollPane(hienThiDanhSachKhuyenMai());
-        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER); // Không cuộn ngang
-        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED); // Cuộn dọc khi cần
-        scrollPane.setBorder(BorderFactory.createEmptyBorder()); // Xóa viền scrollpane
-        add(scrollPane, BorderLayout.CENTER);
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setBorder(BorderFactory.createEmptyBorder());
+        pnMain.add(scrollPane, BorderLayout.CENTER);
 
-        // Đặt màu nền cho panel
-        setBackground(new Color(249, 249, 249));
-    }
+        add(pnMain,BorderLayout.CENTER);
+	}
 
     public JPanel hienThiDanhSachKhuyenMai() {
         ArrayList<Voucher> dsVoucher = VoucherController.layDanhSachVoucher();
-        JPanel promotionGridPanel = new JPanel();
-
+        JPanel promotionGridPanel = new GradientPanel(new Color(10, 10, 30), new Color(60, 30, 180));
         promotionGridPanel.setLayout(new GridLayout(0, 3, 25, 25));
         promotionGridPanel.setBorder(new EmptyBorder(30, 0, 0, 0));
+        promotionGridPanel.setBackground(new Color(249, 249, 249));
+
         for (Voucher vc : dsVoucher) {
             JPanel itemPanel = new JPanel();
-            itemPanel.setLayout(new BorderLayout(0, 10)); 
-            itemPanel.setBackground(Color.WHITE);
-            itemPanel.setBorder(BorderFactory.createLineBorder(new Color(221, 221, 221), 1));
-            itemPanel.setPreferredSize(new Dimension(250, 300)); 
-            itemPanel.setMaximumSize(new Dimension(250, 300)); 
+            itemPanel.setLayout(new BoxLayout(itemPanel, BoxLayout.Y_AXIS));
+            itemPanel.setBackground(Color.decode("#004aad"));
+            itemPanel.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(221, 221, 221), 1),
+                new EmptyBorder(10, 10, 10, 10)
+            ));
+            itemPanel.setPreferredSize(new Dimension(250, 320));
 
-            // Ảnh khuyến mãi
+            // Ảnh
             JLabel imageLabel = new JLabel();
             imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
+            imageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
             try {
-                // Tải ảnh từ resources folder
-                URL imageUrl = getClass().getClassLoader().getResource(vc.getAnhVoucher());
-                if (imageUrl != null) {
-                    ImageIcon originalIcon = new ImageIcon(imageUrl);
-                    // Điều chỉnh kích thước ảnh cho phù hợp
-                    Image image = originalIcon.getImage();
-                    Image scaledImage = image.getScaledInstance(200, 200, Image.SCALE_SMOOTH); // Kích thước ô vuông
-                    imageLabel.setIcon(new ImageIcon(scaledImage));
-                } else {
-                    // Nếu không tìm thấy ảnh, hiển thị placeholder text
-                    imageLabel.setText("No Image");
-                    imageLabel.setPreferredSize(new Dimension(200, 200));
-                    imageLabel.setBackground(Color.LIGHT_GRAY);
-                    imageLabel.setOpaque(true);
-                }
+                ImageIcon originalIcon = new ImageIcon(vc.getAnhVoucher());
+                Image scaledImage = originalIcon.getImage().getScaledInstance(200, 150, Image.SCALE_SMOOTH);
+                imageLabel.setIcon(new ImageIcon(scaledImage));
             } catch (Exception e) {
-                e.printStackTrace();
-                imageLabel.setText("Error loading image");
-                imageLabel.setPreferredSize(new Dimension(200, 200));
-                imageLabel.setBackground(Color.LIGHT_GRAY);
+                imageLabel.setText("No Image");
+                imageLabel.setPreferredSize(new Dimension(200, 150));
                 imageLabel.setOpaque(true);
+                imageLabel.setBackground(Color.LIGHT_GRAY);
             }
-            itemPanel.add(imageLabel, BorderLayout.CENTER); 
+            itemPanel.add(imageLabel);
+            itemPanel.add(Box.createVerticalStrut(10));
 
             // Tiêu đề khuyến mãi
             JLabel titleLabel = new JLabel(vc.getTenVoucher(), SwingConstants.CENTER);
-            titleLabel.setFont(new Font("Arial", Font.PLAIN, 16));
-            titleLabel.setForeground(new Color(85, 85, 85));
-            titleLabel.setBorder(new EmptyBorder(0, 10, 0, 10)); 
-            itemPanel.add(titleLabel, BorderLayout.SOUTH); 
+            titleLabel.setFont(new Font("Arial", Font.BOLD, 16));
+            titleLabel.setForeground(Color.WHITE);
+            titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+            itemPanel.add(titleLabel);
+            itemPanel.add(Box.createVerticalStrut(15));
 
-            // Nút "Đọc chi tiết"
+            // Nút chi tiết
             JButton detailButton = new JButton("Đọc chi tiết");
-            detailButton.setBackground(new Color(0, 123, 255));
+            detailButton.setBackground(Color.decode("#efb146"));
             detailButton.setForeground(Color.WHITE);
-            detailButton.setFocusPainted(false); 
-            detailButton.setBorder(BorderFactory.createEmptyBorder(10, 15, 10, 15));
+            detailButton.setFocusPainted(false);
+            detailButton.setBorder(BorderFactory.createEmptyBorder(8, 15, 8, 15));
             detailButton.setFont(new Font("Arial", Font.BOLD, 14));
-            detailButton.setCursor(new Cursor(Cursor.HAND_CURSOR)); 
-            detailButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    JOptionPane.showMessageDialog(null, "Bạn đã nhấp vào: " + vc.getMoTa(), "Chi tiết khuyến mãi",
-                            JOptionPane.INFORMATION_MESSAGE);
-                }
+            detailButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+            detailButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+            detailButton.addActionListener(e -> {
+            	PromotionDetailPanel promotionDetailPanel = new PromotionDetailPanel(vc);
+                mainContentPanel.add(promotionDetailPanel, "CHI_TIET_KHUYEN_MAI");
+                cardLayout.show(mainContentPanel, "CHI_TIET_KHUYEN_MAI");
             });
+            itemPanel.add(detailButton);
 
-            // Tạo một panel nhỏ để chứa nút và căn giữa nó
-            JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-            buttonPanel.setBackground(Color.WHITE);
-            buttonPanel.add(detailButton);
-            itemPanel.add(buttonPanel, BorderLayout.PAGE_END); // Đặt nút ở cuối cùng của item
-
-            promotionGridPanel.add(itemPanel); // Thêm item vào panel chứa grid
+            promotionGridPanel.add(itemPanel);
         }
+
         return promotionGridPanel;
     }
 }

@@ -1,6 +1,7 @@
 package Views;
 
 import javax.swing.*;
+import java.text.DecimalFormat;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
@@ -9,7 +10,10 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 
 import java.awt.*;
+import java.security.cert.CertPathValidator;
 import java.util.*;
+import java.util.List;
+
 import Utilzs.*;
 import Models.*;
 import Controllers.GheController;
@@ -17,10 +21,12 @@ import Controllers.LichChieuController;
 import Controllers.PhimController;
 import Controllers.PhongChieuController;
 import Controllers.VeController;
+import Controllers.VoucherController;
+import Daos.VeDao;
 
 public class UserInfoPanel extends JPanel {
     private JTextField txtMaKH, txtTenKH, txtSDT, txtEmail, txtDiaChi;
-    private JButton btnLuu, btnXoa, btnThoat;
+    private JButton btnLuu, btnXoa;
     JPanel mainContentPanel;
     CardLayout cardLayout;
     JButton btnThongTinKhachHang, btnVeDaMua, btnHoaDon;
@@ -73,93 +79,136 @@ public class UserInfoPanel extends JPanel {
         return button;
     }
 
-    public JPanel thongTinKhachHang(){
-        JPanel pnMain = new GradientPanel(new Color(10, 10, 30), new Color(60, 30, 180)); 
-        pnMain.setLayout(new GridBagLayout()); // Sử dụng GridBagLayout để căn giữa form
+    public JPanel thongTinKhachHang() {
+        JPanel pnMain = new GradientPanel(new Color(10, 10, 30), new Color(60, 30, 180));
+        pnMain.setLayout(new GridBagLayout());
 
-        JPanel pnForm = new JPanel(new GridBagLayout()); 
+        // ======== Form Panel ========
+        JPanel pnForm = new JPanel(new GridBagLayout());
         pnForm.setOpaque(false);
         pnForm.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createTitledBorder(
-                BorderFactory.createLineBorder(new Color(0, 123, 255), 2), // Viền xanh
-                "Thông Tin Khách Hàng", // Tiêu đề
-                TitledBorder.CENTER, // Căn giữa tiêu đề
-                TitledBorder.TOP, // Vị trí tiêu đề
-                new Font("Arial", Font.BOLD, 18), // Font tiêu đề
-                new Color(0, 123, 255) // Màu tiêu đề
+                BorderFactory.createLineBorder(new Color(0, 123, 255), 2),
+                "Thông Tin Khách Hàng",
+                TitledBorder.CENTER,
+                TitledBorder.TOP,
+                new Font("Arial", Font.BOLD, 18),
+                new Color(0, 123, 255)
             ),
-            new EmptyBorder(30, 50, 30, 50) // Padding bên trong form
+            new EmptyBorder(30, 50, 30, 50)
         ));
 
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(10, 10, 10, 10); 
-        gbc.fill = GridBagConstraints.HORIZONTAL; 
+        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        // Labels
         JLabel lblMaKH = new JLabel("Mã Khách Hàng:");
         JLabel lblTenKH = new JLabel("Tên Khách Hàng:");
         JLabel lblSDT = new JLabel("Số Điện Thoại:");
         JLabel lblEmail = new JLabel("Email:");
         JLabel lblDiaChi = new JLabel("Địa Chỉ:");
 
-        // Style Labels
         Font labelFont = new Font("Arial", Font.BOLD, 14);
-        Color labelColor = new Color(51, 51, 51); // Màu xám đậm
-        lblMaKH.setFont(labelFont); lblMaKH.setForeground(labelColor);
-        lblTenKH.setFont(labelFont); lblTenKH.setForeground(labelColor);
-        lblSDT.setFont(labelFont); lblSDT.setForeground(labelColor);
-        lblEmail.setFont(labelFont); lblEmail.setForeground(labelColor);
-        lblDiaChi.setFont(labelFont); lblDiaChi.setForeground(labelColor);
+        Color labelColor = new Color(51, 51, 51);
+        JLabel[] labels = { lblMaKH, lblTenKH, lblSDT, lblEmail, lblDiaChi };
+        for (JLabel lbl : labels) {
+            lbl.setFont(labelFont);
+            lbl.setForeground(labelColor);
+        }
 
-        // TextFields
         txtMaKH = createStyledTextField();
         txtTenKH = createStyledTextField();
         txtSDT = createStyledTextField();
         txtEmail = createStyledTextField();
         txtDiaChi = createStyledTextField();
 
-        // Thêm Labels và TextFields vào pnForm
-        gbc.gridx = 0; gbc.gridy = 0; pnForm.add(lblMaKH, gbc);
-        gbc.gridx = 1; gbc.gridy = 0; gbc.weightx = 1.0; pnForm.add(txtMaKH, gbc); // weightx để txt điền đầy
-        gbc.gridx = 0; gbc.gridy = 1; gbc.weightx = 0; pnForm.add(lblTenKH, gbc);
-        gbc.gridx = 1; gbc.gridy = 1; gbc.weightx = 1.0; pnForm.add(txtTenKH, gbc);       
-        gbc.gridx = 0; gbc.gridy = 2; gbc.weightx = 0; pnForm.add(lblSDT, gbc);
-        gbc.gridx = 1; gbc.gridy = 2; gbc.weightx = 1.0; pnForm.add(txtSDT, gbc);        
-        gbc.gridx = 0; gbc.gridy = 3; gbc.weightx = 0; pnForm.add(lblEmail, gbc);
-        gbc.gridx = 1; gbc.gridy = 3; gbc.weightx = 1.0; pnForm.add(txtEmail, gbc);       
-        gbc.gridx = 0; gbc.gridy = 4; gbc.weightx = 0; pnForm.add(lblDiaChi, gbc);
-        gbc.gridx = 1; gbc.gridy = 4; gbc.weightx = 1.0; pnForm.add(txtDiaChi, gbc);
+        JTextField[] fields = { txtMaKH, txtTenKH, txtSDT, txtEmail, txtDiaChi };
 
+        for (int i = 0; i < labels.length; i++) {
+            gbc.gridx = 0;
+            gbc.gridy = i;
+            gbc.weightx = 0;
+            pnForm.add(labels[i], gbc);
 
-        JPanel pnButtons = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 0)); 
-        pnButtons.setOpaque(false); 
+            gbc.gridx = 1;
+            gbc.weightx = 1.0;
+            pnForm.add(fields[i], gbc);
+        }
 
-        // Style các nút hành động
-        btnLuu = createActionButton("Lưu", new Color(40, 167, 69)); // Màu xanh lá
-        btnXoa = createActionButton("Xóa", new Color(220, 53, 69)); // Màu đỏ
-        btnThoat = createActionButton("Đóng", new Color(108, 117, 125)); // Màu xám
+        // ======== Tổng Chi Tiêu Panel ========
+        JPanel pnChiTieu = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        pnChiTieu.setOpaque(false);
+        pnChiTieu.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createTitledBorder(
+                BorderFactory.createLineBorder(new Color(0, 123, 255), 2),
+                "Tổng chi tiêu",
+                TitledBorder.CENTER,
+                TitledBorder.TOP,
+                new Font("Arial", Font.BOLD, 18),
+                new Color(0, 123, 255)
+            ),
+            new EmptyBorder(30, 50, 30, 50)
+        ));
+
+        double tongChiTieu = tinhTongChiTieuTheoMaKH("US001"); // Hàm xử lý
+        DecimalFormat df = new DecimalFormat("#,### VND");
+        JLabel lblChiTieu = new JLabel("Tổng chi tiêu: " + df.format(tongChiTieu));
+        lblChiTieu.setFont(new Font("Arial", Font.BOLD, 16));
+        lblChiTieu.setForeground(Color.WHITE);
+        pnChiTieu.add(lblChiTieu);
+
+        // ======== Buttons Panel ========
+        JPanel pnButtons = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 0));
+        pnButtons.setOpaque(false);
+
+        btnLuu = createActionButton("Lưu", new Color(40, 167, 69));
+        btnXoa = createActionButton("Xóa", new Color(220, 53, 69));
+        btnThoat = createActionButton("Đóng", new Color(108, 117, 125));
 
         pnButtons.add(btnLuu);
         pnButtons.add(btnXoa);
         pnButtons.add(btnThoat);
 
-        // Thêm pnForm và pnButtons vào pnMain
-        // Căn giữa pnForm
+        // ======== Add to Main Panel ========
         GridBagConstraints gbcMain = new GridBagConstraints();
+        gbcMain.insets = new Insets(20, 20, 10, 20);
+        gbcMain.fill = GridBagConstraints.BOTH;
+        gbcMain.weighty = 1.0;
+
+        // pnForm (trái)
         gbcMain.gridx = 0;
         gbcMain.gridy = 0;
-        gbcMain.anchor = GridBagConstraints.CENTER; // Căn giữa theo chiều ngang và dọc
-        gbcMain.weightx = 1.0; // Cho phép mở rộng theo chiều ngang
-        gbcMain.weighty = 0.8; // Cho phép mở rộng theo chiều dọc (để pnForm chiếm phần lớn không gian)
+        gbcMain.weightx = 0.7;
         pnMain.add(pnForm, gbcMain);
 
-        // Đặt pnButtons ở dưới pnForm, căn giữa
+        // pnChiTieu (phải)
+        gbcMain.gridx = 1;
+        gbcMain.gridy = 0;
+        gbcMain.weightx = 0.3;
+        pnMain.add(pnChiTieu, gbcMain);
+
+        // pnButtons (hàng dưới)
+        gbcMain.gridx = 0;
         gbcMain.gridy = 1;
-        gbcMain.weighty = 0.2; // Chiếm phần còn lại của không gian
-        gbcMain.insets = new Insets(20, 0, 0, 0); // Khoảng cách từ form
+        gbcMain.gridwidth = 2;
+        gbcMain.weightx = 1.0;
+        gbcMain.weighty = 0;
+        gbcMain.insets = new Insets(10, 0, 10, 0);
         pnMain.add(pnButtons, gbcMain);
 
         return pnMain;
+    }
+    
+    ArrayList<HoaDonVe> danhSachHoaDonVe = VeController.layDanhSachHoaDonVeTheoMaNguoiDung("US001");
+    public double tinhTongChiTieuTheoMaKH(String maKH) {
+        double tong = 0;
+        
+        for (HoaDonVe hdv : danhSachHoaDonVe) {
+            if (hdv.getMaNguoiDung().equals(maKH)) {
+                tong += hdv.getTongThanhToan();
+            }
+        }
+        return tong;
     }
 
     private JTextField createStyledTextField() {
@@ -261,16 +310,93 @@ public class UserInfoPanel extends JPanel {
         return pnMain;
     }
 
-    public JPanel hoaDon (){
+    public JScrollPane hoaDon() {
         JPanel pnMain = new GradientPanel(new Color(10, 10, 30), new Color(60, 30, 180));
-        pnMain.setLayout(new GridBagLayout()); 
+        pnMain.setLayout(new  GridLayout(0, 3, 10, 10));  // xếp dọc từng hóa đơn
 
-        JLabel lblPlaceholder = new JLabel("Nội dung Hóa đơn sẽ hiển thị ở đây...");
-        lblPlaceholder.setFont(new Font("Arial", Font.ITALIC, 20));
-        lblPlaceholder.setForeground(new Color(220, 220, 220)); 
-        pnMain.add(lblPlaceholder); 
+        for (HoaDonVe hdv : danhSachHoaDonVe) {
+            JPanel pnHoaDonVe = new JPanel();
+            pnHoaDonVe.setLayout(new BoxLayout(pnHoaDonVe, BoxLayout.Y_AXIS));
+            pnHoaDonVe.setBackground(Color.white);
+            pnHoaDonVe.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(Color.GRAY, 1),
+                BorderFactory.createEmptyBorder(10, 10, 10, 10)
+            ));
+            pnHoaDonVe.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        return pnMain;
+            // Tiêu đề
+            JLabel lblTitle = new JLabel("HÓA ĐƠN VÉ");
+            lblTitle.setFont(new Font("Arial", Font.BOLD, 20));
+            lblTitle.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+            JLabel lblThoiGianGiaoDich = new JLabel("Thời gian giao dịch: " + hdv.getLichSuGiaoDich());
+            JLabel lblTenKhachHang = new JLabel("Khách hàng: " + hdv.getMaNguoiDung()); // Nên hiển thị tên khách hàng nếu có
+
+            pnHoaDonVe.add(lblTitle);
+            pnHoaDonVe.add(Box.createVerticalStrut(5));
+            pnHoaDonVe.add(lblThoiGianGiaoDich);
+            pnHoaDonVe.add(lblTenKhachHang);
+            pnHoaDonVe.add(Box.createVerticalStrut(10)); // khoảng cách
+
+            List<Ve> danhSachVe = VeDao.layDanhSachVeTheoMaHoaDon(hdv.getMaThanhToan());
+            if (!danhSachVe.isEmpty()) {
+                Ve veDauTien = danhSachVe.get(0);
+                LichChieu lc = LichChieuController.layLichChieuTheoMaLichChieu(veDauTien.getMaSuatChieu());
+                PhongChieu ph = PhongChieuController.layPhongChieuTheoMaPhongChieu(lc.getMaPhong());
+                DinhDang dd = PhongChieuController.layDinhDangTheoMaDinhDang(ph.getMaDinhDang());
+                Phim p = PhimController.layPhimTheoMaPhim(lc.getMaPhim());
+
+                JLabel lblTenPhim = new JLabel("Phim: " + p.getTenPhim());
+                lblTenPhim.setFont(new Font("Arial", Font.BOLD, 18));
+
+                JLabel lblThoiLuong = new JLabel(p.getThoiLuong() + " phút - " + p.getDoTuoiChoPhep());
+                JLabel lblPhong = new JLabel("Phòng: " + ph.getTenPhong() + " - Định dạng: " + dd.getTenDinhDang());
+                JLabel lblSuatChieu = new JLabel("Suất: " + lc.getKhungGioChieuString() + " - Ngày: " + lc.getNgayChieu());
+
+                pnHoaDonVe.add(lblTenPhim);
+                pnHoaDonVe.add(lblThoiLuong);
+                pnHoaDonVe.add(lblPhong);
+                pnHoaDonVe.add(lblSuatChieu);
+                pnHoaDonVe.add(Box.createVerticalStrut(10));
+            }
+
+            // Danh sách ghế
+            for (Ve ve : danhSachVe) {
+                Ghe ghe = GheController.layGheTheoMaGhe(ve.getMaGhe());
+                LoaiGhe loaiGhe = GheController.layLoaiGheTheoMa(ghe.getLoaiGhe());
+                JLabel lblVe = new JLabel(
+                        "Ghế: " + ghe.getTenGhe() + " (" + loaiGhe.getLoaiGhe() + ") - " + loaiGhe.getGiaGhe() + " VNĐ");
+                pnHoaDonVe.add(lblVe);
+            }
+            pnHoaDonVe.add(Box.createVerticalStrut(10));
+
+            Voucher vc = VoucherController.layVoucherTheoMaVoucher(hdv.getMaVoucher());
+            if (vc != null) {
+                JLabel lblKhuyenMai = new JLabel("Giảm giá: " + vc.getMoTa() + " - " + vc.getTenVoucher());
+                lblKhuyenMai.setFont(new Font("", Font.ITALIC, 14));
+                pnHoaDonVe.add(lblKhuyenMai);
+            } else {
+                System.out.println("Voucher không tồn tại!");
+            }
+            pnHoaDonVe.add(Box.createVerticalStrut(10));
+
+            // Tổng tiền - đặt trong pnHoaDonVe để rõ ràng
+            JLabel lblTongTien = new JLabel("Tổng tiền: " + hdv.getTongThanhToan() + " VNĐ");
+            lblTongTien.setFont(new Font("Arial", Font.BOLD, 16));
+            lblTongTien.setAlignmentX(Component.RIGHT_ALIGNMENT);
+            pnHoaDonVe.add(lblTongTien);
+
+            // Khoảng cách giữa các hóa đơn
+            pnMain.add(pnHoaDonVe);
+//            pnMain.add(Box.createVerticalStrut(15));
+        }
+
+        JScrollPane scrollPane = new JScrollPane(pnMain);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setPreferredSize(new Dimension(900, 600)); // Bạn chỉnh kích thước phù hợp
+
+        return scrollPane;
     }
 
     private void addEvents() {
@@ -305,14 +431,5 @@ public class UserInfoPanel extends JPanel {
             JOptionPane.showMessageDialog(null, "Đã xóa trắng thông tin.", "Xóa thông tin", JOptionPane.INFORMATION_MESSAGE);
         });
         
-        btnThoat.addActionListener(e -> {
-            // Đóng cửa sổ chứa panel này, hoặc quay lại màn hình trước đó
-            // Ví dụ: Lấy cửa sổ cha và đóng nó
-            Window window = SwingUtilities.getWindowAncestor(this);
-            if (window instanceof JFrame) {
-                ((JFrame) window).dispose(); // Đóng JFrame
-            }
-            // Hoặc nếu là JDialog, dùng ((JDialog)window).dispose();
-        });
     }
 }

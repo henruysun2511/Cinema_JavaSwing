@@ -42,7 +42,7 @@ public class TicketBillPanel extends JPanel {
     public JPanel hienThiThongTinVe(String maHoaDonVe) {
         List<Ve> danhSachVe = VeDao.layDanhSachVeTheoMaHoaDon(maHoaDonVe);
 
-        String[] columnNames = { "Mã Vé", "Phim", "Phòng", "Ghế", "Suất", "Ngày", "Xuất vé" };
+        String[] columnNames = { "Mã Vé", "Phim", "Phòng", "Ghế", "Suất", "Ngày", "Xuất vé (EXCEL)" };
         Object[][] data = new Object[danhSachVe.size()][7];
 
         for (int i = 0; i < danhSachVe.size(); i++) {
