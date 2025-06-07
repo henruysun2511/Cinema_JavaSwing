@@ -8,6 +8,7 @@ public class Voucher {
 	private Date ngayBatDau;
 	private Date ngayKetThuc;
 	private String moTa;
+	private String anhVoucher;
 	
 	public Voucher() {
 		this.maVoucher="";
@@ -16,11 +17,12 @@ public class Voucher {
 		this.ngayBatDau = null;
 		this.ngayKetThuc = null;
 		this.moTa ="";
+		this.anhVoucher = "";
 		
 	}
 	
 	public Voucher(String maVoucher, String tenVoucher, float phanTramGiam, Date ngayBatDau, Date ngayKetThuc,
-			String moTa) {
+			String moTa, String anhVoucher) {
 		super();
 		this.maVoucher = maVoucher;
 		this.tenVoucher = tenVoucher;
@@ -28,6 +30,7 @@ public class Voucher {
 		this.ngayBatDau = ngayBatDau;
 		this.ngayKetThuc = ngayKetThuc;
 		this.moTa = moTa;
+		this.anhVoucher = anhVoucher;
 	}
 
 
@@ -77,6 +80,14 @@ public class Voucher {
 
 	public void setMoTa(String moTa) {
 		this.moTa = moTa;
+	}
+
+	public String getAnhVoucher() {
+		return anhVoucher;
+	}
+
+	public void setAnhVoucher(String anhVoucher) {
+		this.anhVoucher = anhVoucher;
 	}
 
 }

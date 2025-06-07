@@ -11,7 +11,7 @@ public class LoaiGhe {
 		this.giaGhe = 0;
 	}
 	
-	public LoaiGhe(String maLoaiGhe, String loaiGhe) {
+	public LoaiGhe(String maLoaiGhe, String loaiGhe, double giaGhe) {
 		super();
 		this.maLoaiGhe = maLoaiGhe;
 		this.loaiGhe = loaiGhe;

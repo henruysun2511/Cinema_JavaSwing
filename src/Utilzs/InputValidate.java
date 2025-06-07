@@ -1,7 +1,6 @@
 package Utilzs;
 import javax.swing.*;
 import java.util.regex.Pattern;
-import Models.*;
 
 
 public class InputValidate {

@@ -1,12 +1,14 @@
 package Views;
 
 import javax.swing.*;
+
+
 import java.awt.*;
 import java.awt.event.*;
 
 public class ClientFrame extends JFrame {
 	JMenuBar menuBar;
-	JMenu mnuHomePage, mnuShowTime, mnuTicketPrice, mnuPromotion, mnuUserInfo;
+	JMenu mnuHomePage, mnuShowTime, mnuPromotion, mnuUserInfo;
 	JPanel mainContentPanel;
 	CardLayout cardLayout;
 	
@@ -23,13 +25,11 @@ public class ClientFrame extends JFrame {
         mnuHomePage = new JMenu("Trang chủ");
         mnuShowTime = new JMenu("Lịch chiếu");
         mnuPromotion = new JMenu("Khuyến mãi");
-        mnuTicketPrice = new JMenu("Giá vé");
         mnuUserInfo = new JMenu("Thông tin cá nhân");
         
         menuBar.add(mnuHomePage);
         menuBar.add(mnuShowTime);
         menuBar.add(mnuPromotion);
-        menuBar.add(mnuTicketPrice);
         menuBar.add(mnuUserInfo);
         
         setJMenuBar(menuBar);
@@ -40,8 +40,8 @@ public class ClientFrame extends JFrame {
 
         mainContentPanel.add(new HomePagePanel(cardLayout, mainContentPanel), "TRANG_CHU");
         mainContentPanel.add(new ShowTimePanel(cardLayout, mainContentPanel), "LICH_CHIEU");
+         mainContentPanel.add(new PromotionPanel(), "KHUYEN_MAI");
 //        mainContentPanel.add(new GioiThieuPanel(), "GIOI_THIEU");
-//        mainContentPanel.add(new GiaVePanel(), "GIA_VE");
         mainContentPanel.add(new UserInfoPanel(), "THONG_TIN_CA_NHAN");
 
         getContentPane().add(mainContentPanel, BorderLayout.CENTER);
@@ -58,14 +58,16 @@ public class ClientFrame extends JFrame {
                 switchTo("LICH_CHIEU");
             }
         });
+
+        mnuPromotion.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                switchTo("KHUYEN_MAI");
+            }
+        });
+
         mnuUserInfo.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 switchTo("THONG_TIN_CA_NHAN");
-            }
-        });
-        mnuTicketPrice.addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent e) {
-                switchTo("GIA_VE");
             }
         });
     }
@@ -75,7 +77,7 @@ public class ClientFrame extends JFrame {
     }
 
     private void showWindow() {
-    	this.setSize(1200, 600);
+    	this.setSize(1300, 700);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setLocationRelativeTo(null);
         this.setVisible(true);

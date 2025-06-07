@@ -5,17 +5,19 @@ public class Ghe {
 	private String tenGhe;
 	private String loaiGhe;
 	private String maPhong;
+	private int tinhTrangGhe;
 	
 	public Ghe() {
 		
 	}
 
-	public Ghe(String maGhe, String tenGhe, String loaiGhe, String maPhong) {
+	public Ghe(String maGhe, String tenGhe, String loaiGhe, String maPhong, int tinhTrangGhe) {
 		super();
 		this.maGhe = maGhe;
 		this.tenGhe = tenGhe;
 		this.loaiGhe = loaiGhe;
 		this.maPhong = maPhong;
+		this.tinhTrangGhe = tinhTrangGhe;
 	}
 
 	public String getMaGhe() {
@@ -49,6 +51,16 @@ public class Ghe {
 	public void setMaPhong(String maPhong) {
 		this.maPhong = maPhong;
 	}
+
+	public int getTinhTrangGhe() {
+		return tinhTrangGhe;
+	}
+
+	public void setTinhTrangGhe(int tinhTrangGhe) {
+		this.tinhTrangGhe = tinhTrangGhe;
+	}
+
+	
 	
 	
 

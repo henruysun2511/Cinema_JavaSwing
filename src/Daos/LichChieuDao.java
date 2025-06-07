@@ -121,6 +121,28 @@ public class LichChieuDao {
 		return dsLichChieuTheoPhongVaNgay;
 	}
 	
+	public static LichChieu layLichChieuTheoMaLichChieu(String maLichChieu) {
+		LichChieu lc = null;
+		try {
+			Connection conn = connectToQuanLyRapChieuPhimDB.getConnection();
+			String sql = "Select * from tblShowTime where showtime_id = ?";
+			PreparedStatement stmt = conn.prepareStatement(sql);
+			stmt.setString(1, maLichChieu);
+			ResultSet rs = stmt.executeQuery();
+			while (rs.next()) {
+				lc = new LichChieu();
+				lc.setKhungGioChieuString(rs.getTime("showtime"));
+				lc.setMaPhong(rs.getString("room_id"));
+				lc.setMaPhim(rs.getString("movie_id"));
+				lc.setNgayChieu(rs.getDate("showtime_day"));
+			}
+			conn.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return lc;
+	}
+
 	public static boolean themLichChieu(LichChieu l) {
 		try {
 			Connection conn = connectToQuanLyRapChieuPhimDB.getConnection();

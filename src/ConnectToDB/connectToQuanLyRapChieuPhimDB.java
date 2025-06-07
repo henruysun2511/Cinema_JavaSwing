@@ -2,8 +2,6 @@ package ConnectToDB;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.Statement;
 
 public class connectToQuanLyRapChieuPhimDB {
     private static String DB_URL = "jdbc:sqlserver://LAPTOP-198J6NK2\\SQLEXPRESS:1433;databaseName=QuanLyRapChieuPhim;encrypt=true;trustServerCertificate=true";

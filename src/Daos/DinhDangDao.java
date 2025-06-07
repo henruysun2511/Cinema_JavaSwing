@@ -19,8 +19,8 @@ public class DinhDangDao {
 
             while (rs.next()) {
                 DinhDang dd = new DinhDang();
-                dd.setMaDinhDang(rs.getString("maDinhDang"));
-                dd.setTenDinhDang(rs.getString("tenDinhDang"));
+                dd.setMaDinhDang(rs.getString("format_id"));
+                dd.setTenDinhDang(rs.getString("format_name"));
                 dsDinhDang.add(dd);
             }
             conn.close();
@@ -30,19 +30,19 @@ public class DinhDangDao {
         return dsDinhDang;
     }
 
-    public static DinhDang layDinhDangTheoMa(String ma) {
+    public static DinhDang layDinhDangTheoMaDinhDang(String maDinhDang) {
         DinhDang dd = null;
         try {
             Connection conn = connectToQuanLyRapChieuPhimDB.getConnection();
             String sql = "SELECT format_id, format_name FROM tblFormatRoom WHERE format_id = ?";
             PreparedStatement stmt = conn.prepareStatement(sql);
-            stmt.setString(1, ma);
+            stmt.setString(1, maDinhDang);
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
                 dd = new DinhDang();
-                dd.setMaDinhDang(rs.getString("maDinhDang"));
-                dd.setTenDinhDang(rs.getString("tenDinhDang"));
+                dd.setMaDinhDang(rs.getString("format_id"));
+                dd.setTenDinhDang(rs.getString("format_name"));
             }
             conn.close();
         } catch (Exception e) {

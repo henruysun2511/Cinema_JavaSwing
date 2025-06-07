@@ -4,8 +4,7 @@ import java.sql.*;
 
 import java.util.ArrayList;
 import ConnectToDB.connectToQuanLyRapChieuPhimDB;
-import Models.Phim;
-import Models.PhongChieu;
+import Models.*;
 
 public class PhongChieuDao {
 	//Lấy tất phòng chiếu

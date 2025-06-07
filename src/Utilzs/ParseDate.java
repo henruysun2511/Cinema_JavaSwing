@@ -2,8 +2,7 @@ package Utilzs;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.sql.Date;
-import java.sql.Time;
+
 
 public class ParseDate {
 	public static java.sql.Date parseToDate(String dateStr) {
