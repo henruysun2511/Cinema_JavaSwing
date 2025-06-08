@@ -17,6 +17,31 @@ import Models.*;
 
 
 public class LichChieuDao {
+	public static ArrayList<LichChieu> layDanhSachLichChieu(){
+		ArrayList<LichChieu> dsLichChieu = new ArrayList<LichChieu>();
+		try {
+			Connection conn = connectToQuanLyRapChieuPhimDB.getConnection();
+			String sql = "Select * from tblShowTime";
+			PreparedStatement stmt = conn.prepareStatement(sql); 
+			ResultSet rs = stmt.executeQuery(); 
+			
+			while(rs.next()) {
+				LichChieu l = new LichChieu();
+				l.setMaLichChieu(rs.getString("showtime_id"));
+				l.setKhungGioChieuString(rs.getTime("showtime"));
+				l.setMaPhim(rs.getString("movie_id"));
+				l.setMaPhong(rs.getString("room_id"));
+				l.setNgayChieu(rs.getDate("showtime_day"));
+				dsLichChieu.add(l);			
+				}
+			conn.close();
+			
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return dsLichChieu;
+	}
+	
 	public static ArrayList<Date> layDanhSachNgayChieu(){
 		ArrayList<Date> dsNgayChieu = new ArrayList<Date>();
 		try {
@@ -186,6 +211,7 @@ public class LichChieuDao {
 			return false;
 		}
 	}
+	
 	
 	public static boolean xoaNgayChieu(String maLichChieu) {
 	    try (Connection conn = connectToQuanLyRapChieuPhimDB.getConnection()) {

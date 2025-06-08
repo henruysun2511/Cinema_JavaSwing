@@ -1,6 +1,7 @@
 package Views;
 
 import javax.swing.*;
+
 import java.text.DecimalFormat;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
@@ -243,7 +244,7 @@ public class UserInfoPanel extends JPanel {
 
         ArrayList<Ve> dsVeDaMua = VeController.layDanhSachVeTheoMaNguoiDung("US001");
 
-        String[] columnNames = { "Mã Vé", "Phim", "Phòng", "Ghế", "Suất", "Ngày", "QR" };
+        String[] columnNames = { "Mã Vé", "Phim", "Phòng", "Ghế", "Suất", "Ngày", "Xuất vé (Excel)" };
         Object[][] data = new Object[dsVeDaMua.size()][7];
 
         for (int i = 0; i < dsVeDaMua.size(); i++) {
@@ -256,7 +257,7 @@ public class UserInfoPanel extends JPanel {
             data[i][3] = ghe.getTenGhe();
             data[i][4] = lc.getKhungGioChieuString();
             data[i][5] = lc.getNgayChieu();
-            data[i][6] = ""; // Giả sử trả về ImageIcon QR
+            data[i][6] = "Xuất vé";
         }
 
         DefaultTableModel model = new DefaultTableModel(data, columnNames) {
@@ -310,7 +311,7 @@ public class UserInfoPanel extends JPanel {
     }
 
     public JScrollPane hoaDon() {
-        JPanel pnMain = new GradientPanel(new Color(240, 240, 240), new Color(220, 220, 255));
+        JPanel pnMain = new GradientPanel(new Color(10, 10, 30), new Color(60, 30, 180));
         pnMain.setLayout(new GridLayout(0, 3, 20, 20));  // mỗi hàng 3 hóa đơn
 
         for (HoaDonVe hdv : danhSachHoaDonVe) {

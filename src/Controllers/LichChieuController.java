@@ -9,6 +9,9 @@ import Models.*;
 
 
 public class LichChieuController {
+	public static ArrayList<LichChieu> layDanhSachLichChieu(){
+		return LichChieuDao.layDanhSachLichChieu();
+	}
     public static LichChieu layLichChieuTheoMaLichChieu(String maLichChieu){
         return LichChieuDao.layLichChieuTheoMaLichChieu(maLichChieu);
     }

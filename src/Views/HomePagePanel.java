@@ -60,8 +60,7 @@ public class HomePagePanel extends JPanel {
         borderLeft.setTitleFont(new Font("Arial", Font.BOLD, 16));
         pnLeftofCenter.setBorder(borderLeft); // Thêm viền cho phim đang chiếu
         pnLeftofCenter.setPreferredSize(new Dimension(900, 1000));
-        pnLeftofCenter.add(hienThiDanhSachPhim(), BorderLayout.CENTER); // hiển thị danh sách phim vào bên trái của
-                                                                        // center
+        pnLeftofCenter.add(hienThiDanhSachPhim(dsPhimDangChieu), BorderLayout.CENTER); // hiển thị danh sách phim vào bên trái của center
 
         // Bên phải của center chứa khuyến mãi
         JPanel pnRightofCenter = new JPanel();
@@ -84,15 +83,16 @@ public class HomePagePanel extends JPanel {
         TitledBorder borderLeft2 = new TitledBorder(BorderFactory.createLineBorder(Color.white), "Phim sắp chiếu");
         borderLeft2.setTitleColor(Color.white); 
         borderLeft2.setTitleFont(new Font("Arial", Font.BOLD, 16));
-        pnLeftofCenter2.setBorder(borderLeft2); // Thêm viền cho phim đang chiếu
-        pnLeftofCenter2.setPreferredSize(new Dimension(900, 300));
+        pnLeftofCenter2.setBorder(borderLeft2); 
+        pnLeftofCenter2.setPreferredSize(new Dimension(900, 1000));
+        pnLeftofCenter2.add(hienThiDanhSachPhim(dsPhimSapChieu), BorderLayout.CENTER);
 
         JPanel pnRightofCenter2 = new JPanel();
         TitledBorder borderRight2 = new TitledBorder(BorderFactory.createLineBorder(Color.white), "Magic Box");
         borderRight.setTitleColor(Color.white); 
         borderRight.setTitleFont(new Font("Arial", Font.BOLD, 16));
-        pnRightofCenter2.setBorder(borderRight2); // Thêm viền khuyến mãi
-        pnRightofCenter2.setPreferredSize(new Dimension(200, 300));
+        pnRightofCenter2.setBorder(borderRight2); 
+        pnRightofCenter2.setPreferredSize(new Dimension(200, 1000));
 
         pnCenter2.add(pnLeftofCenter2);
         pnCenter2.add(pnRightofCenter2);
@@ -158,11 +158,11 @@ public class HomePagePanel extends JPanel {
     }
 
     // Hiển thị danh sách phim đang chiếu
-    ArrayList<Phim> dsPhim = PhimController.layDanhSachPhim();
-    JLabel lblPoster;
+    ArrayList<Phim> dsPhimDangChieu = PhimController.layDanhSachPhimDangChieu();
+    ArrayList<Phim> dsPhimSapChieu = PhimController.layDanhSachPhimSapChieu();
 
-    public JPanel hienThiDanhSachPhim() {
-        pnPhim = new JPanel();
+    public JPanel hienThiDanhSachPhim(ArrayList<Phim> dsPhim) {
+        JPanel pnPhim = new JPanel();
         pnPhim.setLayout(new GridLayout(0, 3, 10, 10));
         pnPhim.setOpaque(false);
 
@@ -171,37 +171,34 @@ public class HomePagePanel extends JPanel {
             pnPhimItem.setLayout(new BoxLayout(pnPhimItem, BoxLayout.Y_AXIS));
             pnPhimItem.setOpaque(false);
 
-            // Poster
             ImageIcon icon = new ImageIcon(p.getAnhPhim());
-            lblPoster = new JLabel();
+            JLabel lblPoster = new JLabel();  // khai báo ở đây, không dùng biến global
             lblPoster.setIcon(icon);
             lblPoster.setPreferredSize(new Dimension(185, 273));
             lblPoster.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
-            // Tên phim
             JLabel lblTenPhim = new JLabel(p.getTenPhim());
             lblTenPhim.setForeground(Color.white);
             lblTenPhim.setFont(new Font("Arial", Font.BOLD, 16));
 
+            String thongTin = String.format("%d phút | %s tuổi", p.getThoiLuong(), p.getDoTuoiChoPhep());
+            JLabel lblThongTinPhim = new JLabel(thongTin, SwingConstants.CENTER);
+            lblThongTinPhim.setForeground(Color.LIGHT_GRAY);
+            lblThongTinPhim.setFont(new Font("Arial", Font.ITALIC, 14));
+
             pnPhimItem.add(lblPoster);
             pnPhimItem.add(lblTenPhim);
+            pnPhimItem.add(lblThongTinPhim);
 
             pnPhim.add(pnPhimItem);
 
-            // Thêm sự kiện khi ấn vô poster sẽ hiện frame chi tiết phim của phim đấy
             lblPoster.addMouseListener(new MouseAdapter() {
                 public void mouseClicked(MouseEvent e) {
-                    // new frmChiTietPhim(p);
                     MovieDetailPanel pnlChiTiet = new MovieDetailPanel(p);
                     mainContentPanel.add(pnlChiTiet, "CHI_TIET");
                     cardLayout.show(mainContentPanel, "CHI_TIET");
                 }
-
-                public void mouseEntered(MouseEvent e) {
-
-                }
             });
-
         }
         return pnPhim;
     }

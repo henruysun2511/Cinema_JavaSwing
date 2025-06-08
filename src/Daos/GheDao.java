@@ -1,6 +1,7 @@
 package Daos;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Set;
 import java.sql.*;
 
@@ -58,6 +59,24 @@ public class GheDao {
 		}
 		return gh;
 	}
+	
+	public static Set<String> layDanhSachGheDaDat(String maSuatChieu) {
+        Set<String> dsGheDaDat = new HashSet<>();
+        try {
+            Connection conn = connectToQuanLyRapChieuPhimDB.getConnection();
+            String sql = "SELECT seat_id FROM tblSeatStatus WHERE showtime_id = ? AND seat_status = 1";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setString(1, maSuatChieu);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                dsGheDaDat.add(rs.getString("seat_id"));
+            }
+            conn.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return dsGheDaDat;
+    }
 
 	public static boolean themTinhTrangGhe(Set<Ghe> danhSachGheDaChon, String maLichChieu, int newStatus) {
 		try {

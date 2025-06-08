@@ -3,6 +3,7 @@ package Views;
 import org.jdatepicker.impl.JDatePickerImpl;
 import org.jdatepicker.impl.JDatePanelImpl;
 import org.jdatepicker.impl.UtilDateModel;
+import org.jfree.layout.LCBLayout;
 
 import javax.swing.*;
 import javax.swing.border.*;
@@ -24,11 +25,13 @@ import javax.swing.table.TableColumnModel;
 public class pnShowTime extends JPanel {
 	JPanel pnTop;
 	JDatePickerImpl datePicker;
-	JButton btnThem, btnLuu, btnXoa, btnHuy, btnThoat, btnSua;
+	JButton btnThem, btnLuu, btnXoa, btnHuy, btnTimKiem, btnSua;
 	JTextField txtMaSuatChieu, txtPhong, txtNgay, txtSuatChieu;
 	JComboBox<Phim> cboPhim;
 	JTable currentTable;
 	boolean isAdding = false;
+	 JTextField txtTimKiem;
+	 
 	
 	public pnShowTime() {		
 		this.setBounds(100, 100, 693, 559);
@@ -57,6 +60,14 @@ public class pnShowTime extends JPanel {
         
         JPanel pnDatePicker = new JPanel(new FlowLayout(FlowLayout.LEFT));
         pnDatePicker.add(datePicker);
+        
+        JPanel pnTimKiem = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        JLabel lblTimKiem = new JLabel("Tìm kiếm:");
+        txtTimKiem = new JTextField(20);
+        pnTimKiem.add(lblTimKiem);
+        pnTimKiem.add(txtTimKiem);
+        
+        pnDatePicker.add(pnTimKiem);
         
         //Ngày được chọn
         java.util.Date utilDate = (java.util.Date) datePicker.getModel().getValue();
@@ -156,21 +167,21 @@ public class pnShowTime extends JPanel {
 		btnXoa = new JButton("Xóa");
 		btnLuu = new JButton("Lưu");
 		btnHuy = new JButton("Hủy");
-		btnThoat = new JButton("Tìm kiếm");
+		btnTimKiem = new JButton("Tìm kiếm");
 		
 		btnThem.setBackground(Color.decode("#FFBD59"));
 		btnSua.setBackground(Color.decode("#FFBD59"));
 		btnXoa.setBackground(Color.decode("#FFBD59"));
 		btnLuu.setBackground(Color.decode("#FFBD59"));
 		btnHuy.setBackground(Color.decode("#FFBD59"));
-		btnThoat.setBackground(Color.decode("#FFBD59"));
+		btnTimKiem.setBackground(Color.decode("#FFBD59"));
 		
 		pnRightOfBottom.add(btnThem);
 		pnRightOfBottom.add(btnLuu);
 		pnRightOfBottom.add(btnSua);
 		pnRightOfBottom.add(btnXoa);
 		pnRightOfBottom.add(btnHuy);
-		pnRightOfBottom.add(btnThoat);
+		pnRightOfBottom.add(btnTimKiem);
 		
 		
 		pnBottom.add(pnLeftOfBottom);
@@ -249,7 +260,7 @@ public class pnShowTime extends JPanel {
 	
 	//Đổ dữ liệu tên phim vào ComboBox
 	public static void doDuLieuVaoComboBoxPhim(JComboBox<Phim> comboBox) {
-	    ArrayList<Phim> dsPhim = PhimController.layDanhSachPhim();
+	    ArrayList<Phim> dsPhim = PhimController.layDanhSachPhimDangChieu();
 	    comboBox.removeAllItems(); 
 
 	    for (Phim phim : dsPhim) {
@@ -294,6 +305,8 @@ public class pnShowTime extends JPanel {
 	    btnLuu.addActionListener(e -> xuLyLuu());
 	    btnSua.addActionListener(e -> xuLySua());
 	    btnXoa.addActionListener(e -> xuLyXoa());
+	    btnTimKiem.addActionListener(e -> xuLyTimKiem());
+	    btnHuy.addActionListener(e -> xuLyHuy());
 	}
 	
 	
@@ -303,6 +316,14 @@ public class pnShowTime extends JPanel {
 	    txtPhong.setText("");
 	    txtNgay.setText(String.valueOf(new java.sql.Date(((java.util.Date) datePicker.getModel().getValue()).getTime())));
 	    cboPhim.setSelectedIndex(0);
+	}
+	
+	public void xuLyHuy() {
+		reset();
+		txtTimKiem.setText("");
+		 if (pnTop.getComponentCount() > 2) {
+			 capNhatGiaoDienLichChieu();
+		    }
 	}
 	
 	public void xuLyThem() {
@@ -327,6 +348,23 @@ public class pnShowTime extends JPanel {
 	    Phim phim = (Phim) cboPhim.getSelectedItem();
 
 	    InputValidate.showTimeValidate(maSuatChieu, suatChieu, tenPhong, ngay);
+	    
+	    Date ngayChieu = ParseDate.parseToDate(ngay);
+	    Time gioBatDauMoi = ParseDate.parseToTime(suatChieu);
+
+	    // Kiểm tra suất chiếu
+	    boolean hopLe = kiemTraHopLeSuatChieuMoi(
+	            PhongChieuController.layMaPhongTheoTenPhong(Integer.parseInt(tenPhong)),
+	            ngayChieu,
+	            gioBatDauMoi);
+
+	    if (!hopLe) {
+	        JOptionPane.showMessageDialog(
+	                this,
+	                "Thời gian suất chiếu không hợp lệ!\n" +
+	                "Suất mới phải bắt đầu sau suất trước ít nhất “thời lượng phim trước + 15 phút”.");
+	        return;
+	    }
 
 	    LichChieu lc = new LichChieu();
 	    lc.setMaLichChieu(maSuatChieu);
@@ -348,6 +386,39 @@ public class pnShowTime extends JPanel {
 	    } else {
 	        JOptionPane.showMessageDialog(this, "Thêm thất bại!");
 	    }
+	}
+	
+	public static boolean kiemTraHopLeSuatChieuMoi(String maPhong, Date ngayChieu, Time gioBatDauMoi) {
+	    ArrayList<LichChieu> danhSach = LichChieuController.layDanhSachLichChieuTheoPhongVaNgay(maPhong, ngayChieu);
+
+	    // Tìm suất chiếu trước suất mới
+	    LichChieu suatTruoc = null;
+	    for (LichChieu lc : danhSach) {
+	        if (lc.getKhungGioChieuString().before(gioBatDauMoi)) {
+	            suatTruoc = lc;
+	        } else {
+	            break;
+	        }
+	    }
+
+	    if (suatTruoc == null) {
+	        return true; // Không có suất trước, hợp lệ
+	    }
+
+	    // Lấy thời lượng phim trước
+	    Phim p = PhimController.layPhimTheoMaPhim(suatTruoc.getMaPhim());
+	    int thoiLuongPhimTruoc = p.getThoiLuong();
+
+	    // Tính giờ kết thúc + 15 phút
+	    long millisKetThuc = suatTruoc.getKhungGioChieuString().getTime() + (thoiLuongPhimTruoc + 15) * 60 * 1000L;
+	    Time gioChoPhepBatDau = new Time(millisKetThuc);
+
+	    if (gioBatDauMoi.before(gioChoPhepBatDau)) {
+	        System.out.println("Phải sau " + gioChoPhepBatDau + ". Suất trước kết thúc trễ hơn.");
+	        return false;
+	    }
+
+	    return true;
 	}
 	
 	public void xuLySua() {
@@ -409,6 +480,66 @@ public class pnShowTime extends JPanel {
 	    }
 	}
 	
+	public void xuLyTimKiem() {
+		String tuKhoa = txtTimKiem.getText().trim().toLowerCase();
+
+	    if (tuKhoa.isEmpty()) {
+	        JOptionPane.showMessageDialog(this, "Vui lòng nhập từ khóa tìm kiếm.");
+	        return;
+	    }
+
+	    ArrayList<LichChieu> ketQua = new ArrayList<>();
+	    ArrayList<LichChieu> danhSachSuatChieu = LichChieuController.layDanhSachLichChieu();
+
+	    for (LichChieu lc : danhSachSuatChieu) {
+	        Phim phim = PhimController.layPhimTheoMaPhim(lc.getMaPhim());
+	        PhongChieu phong = PhongChieuController.layPhongChieuTheoMaPhongChieu(lc.getMaPhong());
+
+	        String maLichChieu = lc.getMaLichChieu().toLowerCase();
+	        String tenPhim = (phim != null) ? phim.getTenPhim().toLowerCase() : "";
+	        String tenPhong = (phong != null) ? String.valueOf(phong.getTenPhong()).toLowerCase() : "";
+	        String ngay = new SimpleDateFormat("dd/MM/yyyy").format(lc.getNgayChieu());
+
+	        if (maLichChieu.contains(tuKhoa) || tenPhim.contains(tuKhoa) || tenPhong.contains(tuKhoa) || ngay.contains(tuKhoa)) {
+	            ketQua.add(lc);
+	        }
+	    }
+
+	    if (ketQua.isEmpty()) {
+	        JOptionPane.showMessageDialog(this, "Không tìm thấy suất chiếu nào phù hợp.");
+	    } else {
+	        hienThiKetQuaTimKiem(ketQua);
+	    }
+	}
+	
+	private void hienThiKetQuaTimKiem(ArrayList<LichChieu> danhSach) {
+	    pnTop.remove(2); // Xóa phần hiển thị phòng hiện tại
+
+	    JPanel panelKetQua = new JPanel();
+	    panelKetQua.setLayout(new BoxLayout(panelKetQua, BoxLayout.Y_AXIS));
+	    panelKetQua.setBackground(Color.WHITE);
+	    panelKetQua.setBorder(BorderFactory.createTitledBorder("Kết quả tìm kiếm"));
+
+	    for (LichChieu lc : danhSach) {
+	        Phim phim = PhimController.layPhimTheoMaPhim(lc.getMaPhim());
+	        PhongChieu phong = PhongChieuController.layPhongChieuTheoMaPhongChieu(lc.getMaPhong());
+
+	        String info = "Phim: " + (phim != null ? phim.getTenPhim() : lc.getMaPhim()) +
+	                      " | Phòng: " + (phong != null ? phong.getTenPhong() : lc.getMaPhong()) +
+	                      " | Ngày: " + new SimpleDateFormat("dd/MM/yyyy").format(lc.getNgayChieu()) +
+	                      " | Giờ: " + lc.getKhungGioChieuString().toString().substring(0, 5);
+
+	        JLabel lbl = new JLabel(info);
+	        panelKetQua.add(lbl);
+	    }
+
+	    pnTop.add(panelKetQua);
+	    pnTop.revalidate();
+	    pnTop.repaint();
+	}
+	
+	
+	
 	private void capNhatGiaoDienLichChieu() {
 		java.util.Date Date = (java.util.Date) datePicker.getModel().getValue();
         java.sql.Date newDate = new java.sql.Date(Date.getTime());
@@ -417,53 +548,6 @@ public class pnShowTime extends JPanel {
 	    pnTop.revalidate();
 	    pnTop.repaint();
 	}
-	
-//	public void setLuuListener(ActionListener listener) {
-//	    btnLuu.addActionListener(listener);
-//	}
-//
-//	public void setXoaListener(ActionListener listener) {
-//	    btnXoa.addActionListener(listener);
-//	}
-//
-//	public void setSuaListener(ActionListener listener) {
-//	    btnSua.addActionListener(listener);
-//	}
-//	
-//	public String getMaSuatChieu() {
-//		return txtMaSuatChieu.getText();
-//	}
-//	
-//	public java.sql.Time getSuatChieu() {
-//		return ParseDate.parseToTime(txtSuatChieu.getText());
-//	}
-//	
-//	public String getMaPhim(){
-//		Phim selectedPhim = (Phim) cboPhim.getSelectedItem();
-//		String maPhim = selectedPhim.getMaPhim();
-//		return maPhim;
-//	}
-//	
-//	public String getMaPhong() {
-//		String phongText = txtPhong.getText().trim();
-//	    if (phongText.isEmpty()) {
-//	        return ""; 
-//	    }
-//	    String maPhong = PhongChieuController.layMaPhongTheoTenPhong(Integer.parseInt(phongText));
-//	    return maPhong;
-//	}
-//	
-//	public java.sql.Date getNgay() {
-//		 java.sql.Date ngay = ParseDate.parseToDate(txtNgay.getText());
-//		    if (ngay == null) {
-//		        System.err.println("Lỗi: Ngày nhập vào không hợp lệ hoặc trống.");
-//		    }
-//		   return ngay;
-//	}
-//	
-//	public JTable getTable() { 
-//		return table;
-//	}
 	
 
 	public static void main(String[] args) {
@@ -478,6 +562,7 @@ public class pnShowTime extends JPanel {
 
 		// Hiển thị frame
 		frame.setVisible(true);
+		
 	}
 
 }

@@ -299,6 +299,7 @@ public class BookingPanel extends JPanel {
 
 		seatButtonsMap.clear(); // Xóa các nút cũ nếu có
 		Map<Integer, Ghe> indexToGhe = new HashMap<>();
+		Set<String> gheDaDat = GheController.layDanhSachGheDaDat(l.getMaLichChieu());
 
 		for (int i = 0; i < dsGhe.size(); i++) {
 			Ghe gh = dsGhe.get(i);
@@ -309,7 +310,7 @@ public class BookingPanel extends JPanel {
 				btnGhe.setFont(new Font("Arial", Font.BOLD, 9));
 			}
 
-			if (gh.getTinhTrangGhe() == 1) { // Ghế đã bán
+			if (gheDaDat.contains(gh.getMaGhe())) { // Ghế đã bán
 				btnGhe.setBackground(Color.GRAY);
 				btnGhe.setEnabled(false);
 			} else if (gh.getLoaiGhe().equals("ST002")) {

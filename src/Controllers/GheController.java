@@ -10,6 +10,10 @@ public class GheController {
     public static ArrayList<Ghe> layDanhSachGhe(String maSuatChieu) {
         return GheDao.layDanhSachGheTheoMaSuatChieu(maSuatChieu);
     }
+    
+    public static Set<String> layDanhSachGheDaDat(String maSuatChieu){
+    	return GheDao.layDanhSachGheDaDat(maSuatChieu);
+    }
 
     public static Ghe layGheTheoMaGhe(String maGhe) {
         return GheDao.layGheTheoMaGhe(maGhe);

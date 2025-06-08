@@ -15,7 +15,39 @@ public class PhimDao {
 		
 		try {
 			Connection conn = connectToQuanLyRapChieuPhimDB.getConnection(); //kết nối sql
-			String sql = "Select * from tblMovie"; //câu lệnh sql
+			String sql = "Select * from tblMovie where status = '1'"; //câu lệnh sql
+			PreparedStatement stmt = conn.prepareStatement(sql); 
+			//stmt.setString(1,movie_id) nếu có điều kiện
+			ResultSet rs = stmt.executeQuery(); //chạy câu lệnh sql
+			
+			while(rs.next()) { //lấy dữ liệu từ ResultSet gán vào đối tượng Phim
+				 Phim p = new Phim(
+		                    rs.getString("movie_id"),
+		                    rs.getString("movie_name"),
+		                    rs.getString("release_date"),
+		                    rs.getString("director"),
+		                    rs.getInt("duration"),
+		                    rs.getString("script"),	
+		                    rs.getString("age_permisson"),	
+		                    rs.getString("poster"),
+		                    rs.getInt("status")
+		                );
+		         dsPhim.add(p); //lưu thông tin lấy được vào list
+			}
+			conn.close();
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return dsPhim; //trả về list chứa mảng các đối tượng
+	}
+	
+	public static ArrayList<Phim> layPhimSapChieu(){
+		ArrayList<Phim> dsPhim = new ArrayList<>(); //khởi tạo một list thuộc kiểu Phim rỗng
+		
+		try {
+			Connection conn = connectToQuanLyRapChieuPhimDB.getConnection(); //kết nối sql
+			String sql = "Select * from tblMovie where status = '0'"; //câu lệnh sql
 			PreparedStatement stmt = conn.prepareStatement(sql); 
 			//stmt.setString(1,movie_id) nếu có điều kiện
 			ResultSet rs = stmt.executeQuery(); //chạy câu lệnh sql
