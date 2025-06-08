@@ -34,7 +34,7 @@ public class TicketBillPanel extends JPanel {
         pnMain.add(tablePanel, BorderLayout.CENTER);
         JPanel hoaDonPanel = hienThiThongTinHoaDon(maHoaDonVe);
         hoaDonPanel.setPreferredSize(new Dimension(300, 0));
-//        pnMain.add(hoaDonPanel, BorderLayout.EAST);
+        pnMain.add(hoaDonPanel, BorderLayout.EAST);
 
         this.add(pnMain, BorderLayout.CENTER);
     }
@@ -42,7 +42,7 @@ public class TicketBillPanel extends JPanel {
     public JPanel hienThiThongTinVe(String maHoaDonVe) {
         List<Ve> danhSachVe = VeDao.layDanhSachVeTheoMaHoaDon(maHoaDonVe);
 
-        String[] columnNames = { "Mã Vé", "Phim", "Phòng", "Ghế", "Suất", "Ngày", "Xuất vé (EXCEL)" };
+        String[] columnNames = { "Mã Vé", "Phim", "Phòng", "Ghế", "Suất", "Ngày", "Xuất vé" };
         Object[][] data = new Object[danhSachVe.size()][7];
 
         for (int i = 0; i < danhSachVe.size(); i++) {
@@ -118,21 +118,32 @@ public class TicketBillPanel extends JPanel {
 
         JPanel pnMain = new JPanel();
         pnMain.setLayout(new BoxLayout(pnMain, BoxLayout.Y_AXIS));
-        pnMain.setBackground(Color.white);
+        pnMain.setBackground(Color.WHITE);
+        pnMain.setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30)); // padding quanh hóa đơn
 
-        // Thông tin chung hóa đơn
-        JLabel lblTitle = new JLabel("HÓA ĐƠN VÉ");
-        lblTitle.setFont(new Font("Arial", Font.BOLD, 20));
+        // Tiêu đề
+        JLabel lblTitle = new JLabel("HÓA ĐƠN THANH TOÁN", SwingConstants.CENTER);
+        lblTitle.setFont(new Font("Serif", Font.BOLD, 22));
         lblTitle.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        JLabel lblThoiGianGiaoDich = new JLabel("Thời gian giao dịch: " + hdv.getLichSuGiaoDich());
-        JLabel lblTenKhachHang = new JLabel("Khách hàng: ");
-
+        lblTitle.setForeground(new Color(30, 30, 130));
         pnMain.add(lblTitle);
+        pnMain.add(Box.createVerticalStrut(10));
+        pnMain.add(new JSeparator());
+
+        // Thông tin giao dịch
+        JLabel lblThoiGianGiaoDich = new JLabel("Thời gian giao dịch: " + hdv.getLichSuGiaoDich());
+        lblThoiGianGiaoDich.setFont(new Font("Arial", Font.PLAIN, 13));
+
+        JLabel lblTenKhachHang = new JLabel("Khách hàng: " + hdv.getMaNguoiDung());
+        lblTenKhachHang.setFont(new Font("Arial", Font.PLAIN, 13));
+
         pnMain.add(lblThoiGianGiaoDich);
         pnMain.add(lblTenKhachHang);
 
-        // Lấy thông tin từ 1 vé đại diện
+        pnMain.add(Box.createVerticalStrut(10));
+        pnMain.add(new JSeparator());
+
+        // Thông tin phim
         if (!danhSachVe.isEmpty()) {
             Ve veDauTien = danhSachVe.get(0);
             LichChieu lc = LichChieuController.layLichChieuTheoMaLichChieu(veDauTien.getMaSuatChieu());
@@ -141,40 +152,57 @@ public class TicketBillPanel extends JPanel {
             Phim p = PhimController.layPhimTheoMaPhim(lc.getMaPhim());
 
             JLabel lblTenPhim = new JLabel("Phim: " + p.getTenPhim());
-            lblTenPhim.setFont(new Font("Arial", Font.BOLD, 18));
-
+            lblTenPhim.setFont(new Font("Arial", Font.BOLD, 15));
             JLabel lblThoiLuong = new JLabel(p.getThoiLuong() + " phút - " + p.getDoTuoiChoPhep());
-            JLabel lblPhong = new JLabel("Phòng: " + ph.getTenPhong() + " - Định dạng: " + dd.getTenDinhDang());
-            JLabel lblSuatChieu = new JLabel("Suất: " + lc.getKhungGioChieuString() + " - Ngày: " + lc.getNgayChieu());
+            JLabel lblPhong = new JLabel("Phòng chiếu: " + ph.getTenPhong() + " (" + dd.getTenDinhDang() + ")");
+            JLabel lblSuatChieu = new JLabel("Suất chiếu: " + lc.getKhungGioChieuString() + " - Ngày: " + lc.getNgayChieu());
 
-            pnMain.add(lblTenPhim);
-            pnMain.add(lblThoiLuong);
-            pnMain.add(lblPhong);
-            pnMain.add(lblSuatChieu);
+            for (JLabel lbl : List.of(lblTenPhim, lblThoiLuong, lblPhong, lblSuatChieu)) {
+                lbl.setFont(new Font("Arial", Font.PLAIN, 13));
+                pnMain.add(lbl);
+            }
+
+            pnMain.add(Box.createVerticalStrut(10));
         }
 
-        // Danh sách ghế
+        // Danh sách vé
+        pnMain.add(new JLabel("Danh sách ghế:"));
         for (Ve ve : danhSachVe) {
             Ghe ghe = GheController.layGheTheoMaGhe(ve.getMaGhe());
             LoaiGhe loaiGhe = GheController.layLoaiGheTheoMa(ghe.getLoaiGhe());
-            JLabel lblVe = new JLabel(
-                    "Ghế: " + ghe.getTenGhe() + " (" + loaiGhe.getLoaiGhe() + ") - " + loaiGhe.getGiaGhe() + " VNĐ");
+
+            JLabel lblVe = new JLabel(" - Ghế " + ghe.getTenGhe() + " (" + loaiGhe.getLoaiGhe() + "): " + loaiGhe.getGiaGhe() + " VNĐ");
+            lblVe.setFont(new Font("Arial", Font.PLAIN, 13));
             pnMain.add(lblVe);
         }
+
+        pnMain.add(Box.createVerticalStrut(10));
 
         // Khuyến mãi
         Voucher vc = VoucherController.layVoucherTheoMaVoucher(hdv.getMaVoucher());
         if (vc != null) {
-            JLabel lblKhuyenMai = new JLabel("Giảm giá: " + vc.getMoTa() + " - " + vc.getTenVoucher());
-            lblKhuyenMai.setFont(new Font("", Font.ITALIC, 14));
+            JLabel lblKhuyenMai = new JLabel("Khuyến mãi: " + vc.getMoTa() + " (" + vc.getTenVoucher() + ")");
+            lblKhuyenMai.setFont(new Font("Arial", Font.ITALIC, 13));
+            lblKhuyenMai.setForeground(Color.RED);
             pnMain.add(lblKhuyenMai);
-        } else {
-            System.out.println("Voucher không tồn tại!");
         }
 
+        pnMain.add(Box.createVerticalStrut(10));
+        pnMain.add(new JSeparator());
+
         // Tổng tiền
-        JLabel lblTongTien = new JLabel("Tổng tiền: " + hdv.getTongThanhToan());
-        lblTongTien.setFont(new Font("", Font.BOLD, 16));
+        JLabel lblTongTien = new JLabel("Tổng tiền: " + String.format("%,.0f", hdv.getTongThanhToan()) + " VNĐ");
+        lblTongTien.setFont(new Font("Arial", Font.BOLD, 15));
+        lblTongTien.setAlignmentX(Component.RIGHT_ALIGNMENT);
+        pnMain.add(lblTongTien);
+
+        // Bằng chữ
+        int tongTienInt = (int) hdv.getTongThanhToan();
+        JLabel lblBangChu = new JLabel("Bằng chữ: " + NumberToVietnameseWords.convertNumberToVietnameseWords(tongTienInt));
+        lblBangChu.setFont(new Font("Arial", Font.ITALIC, 12));
+        lblBangChu.setForeground(Color.DARK_GRAY);
+        pnMain.add(lblBangChu);
+
 
         return pnMain;
     }

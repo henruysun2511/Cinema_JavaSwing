@@ -310,32 +310,40 @@ public class UserInfoPanel extends JPanel {
     }
 
     public JScrollPane hoaDon() {
-        JPanel pnMain = new GradientPanel(new Color(10, 10, 30), new Color(60, 30, 180));
-        pnMain.setLayout(new  GridLayout(0, 3, 10, 10));  // xếp dọc từng hóa đơn
+        JPanel pnMain = new GradientPanel(new Color(240, 240, 240), new Color(220, 220, 255));
+        pnMain.setLayout(new GridLayout(0, 3, 20, 20));  // mỗi hàng 3 hóa đơn
 
         for (HoaDonVe hdv : danhSachHoaDonVe) {
             JPanel pnHoaDonVe = new JPanel();
             pnHoaDonVe.setLayout(new BoxLayout(pnHoaDonVe, BoxLayout.Y_AXIS));
-            pnHoaDonVe.setBackground(Color.white);
+            pnHoaDonVe.setBackground(Color.WHITE);
             pnHoaDonVe.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(Color.GRAY, 1),
-                BorderFactory.createEmptyBorder(10, 10, 10, 10)
+                BorderFactory.createEmptyBorder(15, 20, 15, 20)
             ));
-            pnHoaDonVe.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-            // Tiêu đề
-            JLabel lblTitle = new JLabel("HÓA ĐƠN VÉ");
-            lblTitle.setFont(new Font("Arial", Font.BOLD, 20));
+            // Tiêu đề hóa đơn
+            JLabel lblTitle = new JLabel("HÓA ĐƠN VÉ", SwingConstants.CENTER);
+            lblTitle.setFont(new Font("Serif", Font.BOLD, 22));
             lblTitle.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-            JLabel lblThoiGianGiaoDich = new JLabel("Thời gian giao dịch: " + hdv.getLichSuGiaoDich());
-            JLabel lblTenKhachHang = new JLabel("Khách hàng: " + hdv.getMaNguoiDung()); // Nên hiển thị tên khách hàng nếu có
-
+            lblTitle.setForeground(new Color(30, 30, 130));
             pnHoaDonVe.add(lblTitle);
-            pnHoaDonVe.add(Box.createVerticalStrut(5));
-            pnHoaDonVe.add(lblThoiGianGiaoDich);
-            pnHoaDonVe.add(lblTenKhachHang);
-            pnHoaDonVe.add(Box.createVerticalStrut(10)); // khoảng cách
+
+            pnHoaDonVe.add(Box.createVerticalStrut(10));
+            pnHoaDonVe.add(new JSeparator());
+
+            // Thông tin hóa đơn
+            JLabel lblMaHoaDon = new JLabel("Mã hóa đơn: " + hdv.getMaThanhToan());
+            JLabel lblThoiGianGiaoDich = new JLabel("Thời gian giao dịch: " + hdv.getLichSuGiaoDich());
+            JLabel lblTenKhachHang = new JLabel("Khách hàng: " + hdv.getMaNguoiDung());
+
+            for (JLabel label : List.of(lblMaHoaDon, lblThoiGianGiaoDich, lblTenKhachHang)) {
+                label.setFont(new Font("Arial", Font.PLAIN, 13));
+                pnHoaDonVe.add(label);
+            }
+
+            pnHoaDonVe.add(Box.createVerticalStrut(10));
+            pnHoaDonVe.add(new JSeparator());
 
             List<Ve> danhSachVe = VeDao.layDanhSachVeTheoMaHoaDon(hdv.getMaThanhToan());
             if (!danhSachVe.isEmpty()) {
@@ -346,54 +354,64 @@ public class UserInfoPanel extends JPanel {
                 Phim p = PhimController.layPhimTheoMaPhim(lc.getMaPhim());
 
                 JLabel lblTenPhim = new JLabel("Phim: " + p.getTenPhim());
-                lblTenPhim.setFont(new Font("Arial", Font.BOLD, 18));
-
+                lblTenPhim.setFont(new Font("Arial", Font.BOLD, 17));
                 JLabel lblThoiLuong = new JLabel(p.getThoiLuong() + " phút - " + p.getDoTuoiChoPhep());
-                JLabel lblPhong = new JLabel("Phòng: " + ph.getTenPhong() + " - Định dạng: " + dd.getTenDinhDang());
-                JLabel lblSuatChieu = new JLabel("Suất: " + lc.getKhungGioChieuString() + " - Ngày: " + lc.getNgayChieu());
+                JLabel lblPhong = new JLabel("Phòng chiếu: " + ph.getTenPhong() + " (" + dd.getTenDinhDang() + ")");
+                JLabel lblSuatChieu = new JLabel("Suất chiếu: " + lc.getKhungGioChieuString() + " - Ngày: " + lc.getNgayChieu());
 
-                pnHoaDonVe.add(lblTenPhim);
-                pnHoaDonVe.add(lblThoiLuong);
-                pnHoaDonVe.add(lblPhong);
-                pnHoaDonVe.add(lblSuatChieu);
+                for (JLabel label : List.of(lblTenPhim, lblThoiLuong, lblPhong, lblSuatChieu)) {
+                    label.setFont(new Font("Arial", Font.PLAIN, 13));
+                    pnHoaDonVe.add(label);
+                }
+
                 pnHoaDonVe.add(Box.createVerticalStrut(10));
             }
 
-            // Danh sách ghế
+            // Danh sách vé
+            pnHoaDonVe.add(new JLabel("Danh sách vé:"));
             for (Ve ve : danhSachVe) {
                 Ghe ghe = GheController.layGheTheoMaGhe(ve.getMaGhe());
                 LoaiGhe loaiGhe = GheController.layLoaiGheTheoMa(ghe.getLoaiGhe());
-                JLabel lblVe = new JLabel(
-                        "Ghế: " + ghe.getTenGhe() + " (" + loaiGhe.getLoaiGhe() + ") - " + loaiGhe.getGiaGhe() + " VNĐ");
+                JLabel lblVe = new JLabel(" - Ghế " + ghe.getTenGhe() + " (" + loaiGhe.getLoaiGhe() + "): " + loaiGhe.getGiaGhe() + " VNĐ");
+                lblVe.setFont(new Font("Arial", Font.PLAIN, 13));
                 pnHoaDonVe.add(lblVe);
             }
+
             pnHoaDonVe.add(Box.createVerticalStrut(10));
 
+            // Khuyến mãi
             Voucher vc = VoucherController.layVoucherTheoMaVoucher(hdv.getMaVoucher());
             if (vc != null) {
-                JLabel lblKhuyenMai = new JLabel("Giảm giá: " + vc.getMoTa() + " - " + vc.getTenVoucher());
-                lblKhuyenMai.setFont(new Font("", Font.ITALIC, 14));
+                JLabel lblKhuyenMai = new JLabel("Khuyến mãi: " + vc.getMoTa() + " (" + vc.getTenVoucher() + ")");
+                lblKhuyenMai.setFont(new Font("Arial", Font.ITALIC, 13));
+                lblKhuyenMai.setForeground(Color.RED);
                 pnHoaDonVe.add(lblKhuyenMai);
-            } else {
-                System.out.println("Voucher không tồn tại!");
             }
-            pnHoaDonVe.add(Box.createVerticalStrut(10));
 
-            // Tổng tiền - đặt trong pnHoaDonVe để rõ ràng
-            JLabel lblTongTien = new JLabel("Tổng tiền: " + hdv.getTongThanhToan() + " VNĐ");
-            lblTongTien.setFont(new Font("Arial", Font.BOLD, 16));
+            pnHoaDonVe.add(Box.createVerticalStrut(10));
+            pnHoaDonVe.add(new JSeparator());
+
+            // Tổng tiền
+            JLabel lblTongTien = new JLabel("Tổng cộng: " + String.format("%,.0f", hdv.getTongThanhToan()) + " VNĐ");
+            lblTongTien.setFont(new Font("Arial", Font.BOLD, 15));
             lblTongTien.setAlignmentX(Component.RIGHT_ALIGNMENT);
             pnHoaDonVe.add(lblTongTien);
 
-            // Khoảng cách giữa các hóa đơn
+            int tongTienInt = (int) hdv.getTongThanhToan();
+            JLabel lblBangChu = new JLabel("Bằng chữ: " + NumberToVietnameseWords.convertNumberToVietnameseWords(tongTienInt));
+            lblBangChu.setFont(new Font("Arial", Font.ITALIC, 12));
+            lblBangChu.setForeground(Color.DARK_GRAY);
+            pnHoaDonVe.add(lblBangChu);
+
+
+
             pnMain.add(pnHoaDonVe);
-//            pnMain.add(Box.createVerticalStrut(15));
         }
 
         JScrollPane scrollPane = new JScrollPane(pnMain);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        scrollPane.setPreferredSize(new Dimension(900, 600)); // Bạn chỉnh kích thước phù hợp
+        scrollPane.setPreferredSize(new Dimension(900, 600));
 
         return scrollPane;
     }
