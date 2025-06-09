@@ -74,8 +74,8 @@ public class TicketBillPanel extends JPanel {
         };
         JTable table = new JTable(model);
         
-//        table.getColumn("Xuất vé").setCellRenderer(new ButtonRenderer());
-//        table.getColumn("Xuất vé").setCellEditor(new ButtonEditor(new JCheckBox()));
+        table.getColumn("Xuất vé").setCellRenderer(new ButtonRenderer());
+        table.getColumn("Xuất vé").setCellEditor(new ButtonEditor(new JCheckBox()));
 
        
         table.setRowHeight(90);
@@ -116,11 +116,12 @@ public class TicketBillPanel extends JPanel {
     public JPanel hienThiThongTinHoaDon(String maHoaDonVe) {
         List<Ve> danhSachVe = VeDao.layDanhSachVeTheoMaHoaDon(maHoaDonVe);
         HoaDonVe hdv = VeController.layHoaDonVeTheoMaHoaDonVe(maHoaDonVe);
+        Voucher vc = VoucherController.layVoucherTheoMaVoucher(hdv.getMaVoucher());
 
         JPanel pnMain = new JPanel();
         pnMain.setLayout(new BoxLayout(pnMain, BoxLayout.Y_AXIS));
         pnMain.setBackground(Color.WHITE);
-        pnMain.setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30)); // padding quanh hóa đơn
+        pnMain.setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30)); // Padding
 
         // Tiêu đề
         JLabel lblTitle = new JLabel("HÓA ĐƠN THANH TOÁN", SwingConstants.CENTER);
@@ -133,18 +134,16 @@ public class TicketBillPanel extends JPanel {
 
         // Thông tin giao dịch
         JLabel lblThoiGianGiaoDich = new JLabel("Thời gian giao dịch: " + hdv.getLichSuGiaoDich());
-        lblThoiGianGiaoDich.setFont(new Font("Arial", Font.PLAIN, 13));
-
         JLabel lblTenKhachHang = new JLabel("Khách hàng: " + hdv.getMaNguoiDung());
-        lblTenKhachHang.setFont(new Font("Arial", Font.PLAIN, 13));
-
-        pnMain.add(lblThoiGianGiaoDich);
-        pnMain.add(lblTenKhachHang);
+        for (JLabel lbl : List.of(lblThoiGianGiaoDich, lblTenKhachHang)) {
+            lbl.setFont(new Font("Arial", Font.PLAIN, 13));
+            pnMain.add(lbl);
+        }
 
         pnMain.add(Box.createVerticalStrut(10));
         pnMain.add(new JSeparator());
 
-        // Thông tin phim
+        // Thông tin phim (nếu có vé)
         if (!danhSachVe.isEmpty()) {
             Ve veDauTien = danhSachVe.get(0);
             LichChieu lc = LichChieuController.layLichChieuTheoMaLichChieu(veDauTien.getMaSuatChieu());
@@ -153,7 +152,6 @@ public class TicketBillPanel extends JPanel {
             Phim p = PhimController.layPhimTheoMaPhim(lc.getMaPhim());
 
             JLabel lblTenPhim = new JLabel("Phim: " + p.getTenPhim());
-            lblTenPhim.setFont(new Font("Arial", Font.BOLD, 15));
             JLabel lblThoiLuong = new JLabel(p.getThoiLuong() + " phút - " + p.getDoTuoiChoPhep());
             JLabel lblPhong = new JLabel("Phòng chiếu: " + ph.getTenPhong() + " (" + dd.getTenDinhDang() + ")");
             JLabel lblSuatChieu = new JLabel("Suất chiếu: " + lc.getKhungGioChieuString() + " - Ngày: " + lc.getNgayChieu());
@@ -164,27 +162,39 @@ public class TicketBillPanel extends JPanel {
             }
 
             pnMain.add(Box.createVerticalStrut(10));
+
+            // Nút xuất hóa đơn
+            JButton btnXuatHoaDon = new JButton("Xuất hóa đơn");
+            btnXuatHoaDon.setFont(new Font("Arial", Font.BOLD, 13));
+            btnXuatHoaDon.setAlignmentX(Component.CENTER_ALIGNMENT);
+            btnXuatHoaDon.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    ExportPDF.xuatHoaDonRaPDF(hdv, danhSachVe, p.getTenPhim(),
+                           String.valueOf(ph.getTenPhong()) , String.valueOf(lc.getKhungGioChieuString()) , String.valueOf(lc.getNgayChieu()) , vc);
+                }
+            });
+            pnMain.add(btnXuatHoaDon);
         }
 
-        // Danh sách vé
+        // Danh sách ghế
+        pnMain.add(Box.createVerticalStrut(10));
         pnMain.add(new JLabel("Danh sách ghế:"));
         for (Ve ve : danhSachVe) {
             Ghe ghe = GheController.layGheTheoMaGhe(ve.getMaGhe());
             LoaiGhe loaiGhe = GheController.layLoaiGheTheoMa(ghe.getLoaiGhe());
-
-            JLabel lblVe = new JLabel(" - Ghế " + ghe.getTenGhe() + " (" + loaiGhe.getLoaiGhe() + "): " + loaiGhe.getGiaGhe() + " VNĐ");
+            JLabel lblVe = new JLabel(" - Ghế " + ghe.getTenGhe() + " (" + loaiGhe.getLoaiGhe() + "): "
+                    + String.format("%,.0f", loaiGhe.getGiaGhe()) + " VNĐ");
             lblVe.setFont(new Font("Arial", Font.PLAIN, 13));
             pnMain.add(lblVe);
         }
 
-        pnMain.add(Box.createVerticalStrut(10));
-
-        // Khuyến mãi
-        Voucher vc = VoucherController.layVoucherTheoMaVoucher(hdv.getMaVoucher());
+        // Khuyến mãi (nếu có)
         if (vc != null) {
             JLabel lblKhuyenMai = new JLabel("Khuyến mãi: " + vc.getMoTa() + " (" + vc.getTenVoucher() + ")");
             lblKhuyenMai.setFont(new Font("Arial", Font.ITALIC, 13));
             lblKhuyenMai.setForeground(Color.RED);
+            pnMain.add(Box.createVerticalStrut(10));
             pnMain.add(lblKhuyenMai);
         }
 
@@ -203,16 +213,10 @@ public class TicketBillPanel extends JPanel {
         lblBangChu.setFont(new Font("Arial", Font.ITALIC, 12));
         lblBangChu.setForeground(Color.DARK_GRAY);
         pnMain.add(lblBangChu);
-        
-        JButton btnXuatHoaDon = new JButton("Xuất hóa đơn");
-        btnXuatHoaDon.addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent e) {
-            	ExportExcel.xuatHoaDonExcel(hdv.getMaThanhToan(), "hoa_don.xlsx");
-            }
-        });
-        pnMain.add(btnXuatHoaDon);
+
         return pnMain;
     }
+
     
     
     

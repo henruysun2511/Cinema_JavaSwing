@@ -112,11 +112,10 @@ public class UserInfoPanel extends JPanel {
         JLabel lblDiaChi = new JLabel("Địa Chỉ:");
 
         Font labelFont = new Font("Arial", Font.BOLD, 14);
-        Color labelColor = new Color(51, 51, 51);
         JLabel[] labels = { lblMaKH, lblTenKH, lblSDT, lblEmail, lblDiaChi };
         for (JLabel lbl : labels) {
             lbl.setFont(labelFont);
-            lbl.setForeground(labelColor);
+            lbl.setForeground(Color.white);
         }
 
         txtMaKH = createStyledTextField();
