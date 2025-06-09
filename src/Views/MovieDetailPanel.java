@@ -1,13 +1,16 @@
 package Views;
 
 import javax.swing.*;
+
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.border.TitledBorder;
 
-
+import Models.Actor;
 import Models.Phim;
 import Utilzs.GradientPanel;
+import java.util.List;
+import Controllers.*;
 
 
 public class MovieDetailPanel extends JPanel {
@@ -90,18 +93,24 @@ public class MovieDetailPanel extends JPanel {
 		scrollNoiDung.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
 		// Diễn viên
-		JTextArea txtDienVien = new JTextArea("Diễn viên ở đây");
-		txtDienVien.setFont(new Font("Arial", Font.PLAIN, 18));
-		txtDienVien.setLineWrap(true);
-		txtDienVien.setWrapStyleWord(true);
-		txtDienVien.setEditable(false);
-		txtDienVien.setOpaque(false);
-		txtDienVien.setForeground(Color.WHITE); // màu chữ
+		JPanel pnDienVien = new JPanel();
+		pnDienVien.setLayout(new FlowLayout());
+		pnDienVien.setOpaque(false);
+		List<Actor> dsDienVien = ActorController.findActorsByMovieId(p.getMaPhim());
+		for(Actor actor : dsDienVien) {
+			ImageIcon img2 = new ImageIcon(actor.getActor_image());
+			Image scaledImage2 = img2.getImage().getScaledInstance(250, 370, Image.SCALE_SMOOTH);
+			JLabel lblAnhDienVien= new JLabel(new ImageIcon(scaledImage2));
+			lblAnhDienVien.setPreferredSize(new Dimension(100, 150));
+			pnDienVien.add(lblAnhDienVien);
+			System.out.println("Path ảnh diễn viên: " + actor.getActor_image());
+		}
+		
 
 		TitledBorder borderDienVien = BorderFactory.createTitledBorder("Diễn viên");
 		borderDienVien.setTitleColor(Color.WHITE);
 
-		JScrollPane scrollDienVien = new JScrollPane(txtDienVien);
+		JScrollPane scrollDienVien = new JScrollPane(pnDienVien);
 		scrollDienVien.setBorder(borderDienVien);
 		scrollDienVien.setOpaque(false);
 		scrollDienVien.getViewport().setOpaque(false);

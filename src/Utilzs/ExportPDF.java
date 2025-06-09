@@ -8,6 +8,7 @@ import Models.*;
 import Controllers.*;
 import javax.swing.JOptionPane;
 import java.util.List;
+import com.itextpdf.text.pdf.BaseFont;
 
 public class ExportPDF {
     public static void xuatVeRaPDF(Ve ve, LichChieu lc, Ghe ghe, String tenPhim, String tenPhong) {
@@ -18,15 +19,14 @@ public class ExportPDF {
             document.open();
 
             // Tiêu đề
-            Font titleFont = new Font(Font.FontFamily.HELVETICA, 18, Font.BOLD);
+            Font titleFont = getVietnameseFont(18, Font.BOLD);
             Paragraph title = new Paragraph("VÉ XEM PHIM", titleFont);
             title.setAlignment(Element.ALIGN_CENTER);
             document.add(title);
 
             document.add(new Paragraph(" ")); // dòng trống
 
-            Font normalFont = new Font(Font.FontFamily.HELVETICA, 12);
-
+            Font normalFont = getVietnameseFont(12, Font.NORMAL);
             document.add(new Paragraph("Mã vé: " + ve.getMaVe(), normalFont));
             document.add(new Paragraph("Phim: " + tenPhim, normalFont));
             document.add(new Paragraph("Phòng chiếu: " + tenPhong, normalFont));
@@ -52,13 +52,13 @@ public class ExportPDF {
             PdfWriter.getInstance(document, new FileOutputStream(tenFile));
             document.open();
 
-            Font titleFont = new Font(Font.FontFamily.HELVETICA, 18, Font.BOLD);
+            Font titleFont = getVietnameseFont(18, Font.BOLD);
             Paragraph title = new Paragraph("HÓA ĐƠN THANH TOÁN", titleFont);
             title.setAlignment(Element.ALIGN_CENTER);
             document.add(title);
 
             document.add(new Paragraph(" "));
-            Font normalFont = new Font(Font.FontFamily.HELVETICA, 12);
+            Font normalFont = getVietnameseFont(12, Font.NORMAL);
 
             document.add(new Paragraph("Mã hóa đơn: " + hdv.getMaThanhToan(), normalFont));
             document.add(new Paragraph("Thời gian giao dịch: " + hdv.getLichSuGiaoDich(), normalFont));
@@ -96,6 +96,16 @@ public class ExportPDF {
         } catch (Exception e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(null, "Lỗi khi xuất hóa đơn: " + e.getMessage());
+        }
+    }
+    
+    public static Font getVietnameseFont(float size, int style) {
+        try {
+            BaseFont baseFont = BaseFont.createFont("src/fonts/arial.ttf", BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+            return new Font(baseFont, size, style);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Font(Font.FontFamily.HELVETICA, size, style); // fallback
         }
     }
 }
