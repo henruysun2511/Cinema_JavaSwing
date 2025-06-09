@@ -2,6 +2,7 @@ package Views;
 
 import javax.swing.*;
 
+
 import java.text.DecimalFormat;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
@@ -9,6 +10,7 @@ import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
+import javax.swing.table.TableCellRenderer;
 
 import java.awt.*;
 import java.security.cert.CertPathValidator;
@@ -244,7 +246,7 @@ public class UserInfoPanel extends JPanel {
 
         ArrayList<Ve> dsVeDaMua = VeController.layDanhSachVeTheoMaNguoiDung("US001");
 
-        String[] columnNames = { "Mã Vé", "Phim", "Phòng", "Ghế", "Suất", "Ngày", "Xuất vé (Excel)" };
+        String[] columnNames = { "Mã Vé", "Phim", "Phòng", "Ghế", "Suất", "Ngày", "Xuất vé" };
         Object[][] data = new Object[dsVeDaMua.size()][7];
 
         for (int i = 0; i < dsVeDaMua.size(); i++) {
@@ -257,24 +259,24 @@ public class UserInfoPanel extends JPanel {
             data[i][3] = ghe.getTenGhe();
             data[i][4] = lc.getKhungGioChieuString();
             data[i][5] = lc.getNgayChieu();
-            data[i][6] = "Xuất vé";
+            data[i][6] = "";
         }
 
         DefaultTableModel model = new DefaultTableModel(data, columnNames) {
             @Override
             public Class<?> getColumnClass(int column) {
-                if (column == 6)
-                    return ImageIcon.class;
                 return Object.class;
             }
 
             @Override
             public boolean isCellEditable(int row, int column) {
-                return false;
+            	return column == 6; 
             }
         };
 
         JTable table = new JTable(model);
+        table.getColumn("Xuất vé").setCellRenderer(new ButtonRenderer());
+        table.getColumn("Xuất vé").setCellEditor(new ButtonEditor(new JCheckBox()));
         table.setRowHeight(90);
         table.setForeground(Color.WHITE);
         table.setBackground(new Color(0, 0, 0, 0));
@@ -287,6 +289,7 @@ public class UserInfoPanel extends JPanel {
         for (int i = 0; i < table.getColumnCount(); i++) {
             table.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
         }
+        
 
         // Header
         JTableHeader header = table.getTableHeader();
@@ -450,4 +453,8 @@ public class UserInfoPanel extends JPanel {
         });
         
     }
+    
+    
+        
+        
 }

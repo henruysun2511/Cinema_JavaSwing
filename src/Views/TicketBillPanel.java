@@ -1,6 +1,8 @@
 package Views;
 
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.List;
 import javax.swing.*;
 import javax.swing.table.*;
@@ -32,8 +34,8 @@ public class TicketBillPanel extends JPanel {
         JPanel tablePanel = hienThiThongTinVe(maHoaDonVe);
         pnMain.add(tablePanel, BorderLayout.CENTER);
         JPanel hoaDonPanel = hienThiThongTinHoaDon(maHoaDonVe);
-        hoaDonPanel.setPreferredSize(new Dimension(300, 0));
-        pnMain.add(hoaDonPanel, BorderLayout.EAST);
+        hoaDonPanel.setPreferredSize(new Dimension(300, 300));
+        pnMain.add(hoaDonPanel, BorderLayout.SOUTH);
 
         this.add(pnMain, BorderLayout.CENTER);
     }
@@ -201,66 +203,19 @@ public class TicketBillPanel extends JPanel {
         lblBangChu.setFont(new Font("Arial", Font.ITALIC, 12));
         lblBangChu.setForeground(Color.DARK_GRAY);
         pnMain.add(lblBangChu);
-
-
+        
+        JButton btnXuatHoaDon = new JButton("Xuất hóa đơn");
+        btnXuatHoaDon.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+            	ExportExcel.xuatHoaDonExcel(hdv.getMaThanhToan(), "hoa_don.xlsx");
+            }
+        });
+        pnMain.add(btnXuatHoaDon);
         return pnMain;
     }
     
-//    public class ButtonEditor extends DefaultCellEditor {
-//        private JButton button;
-//        private String maVe;
-//        private boolean clicked;
-//
-//        public ButtonEditor(JCheckBox checkBox) {
-//            super(checkBox);
-//            button = new JButton("Xuất vé");
-//            button.setOpaque(true);
-//
-//            button.addActionListener(e -> {
-//                if (clicked) {
-//                    ExportExcel.xuatVeExcel(maVe); 
-//                }
-//            });
-//        }
-//
-//        @Override
-//        public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected,
-//                int row, int column) {
-//            maVe = table.getValueAt(row, 0).toString();
-//            clicked = true;
-//            return button;
-//        }
-//
-//        @Override
-//        public Object getCellEditorValue() {
-//            clicked = false;
-//            return "Xuất vé";
-//        }
-//
-//        @Override
-//        public boolean stopCellEditing() {
-//            clicked = false;
-//            return super.stopCellEditing();
-//        }
-//
-//        @Override
-//        protected void fireEditingStopped() {
-//            super.fireEditingStopped();
-//        }
-//    }
-//        
-//        public class ButtonRenderer extends JButton implements TableCellRenderer {
-//
-//            public ButtonRenderer() {
-//                setOpaque(true);
-//                setText("Xuất vé");
-//            }
-//
-//            @Override
-//            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
-//                    boolean hasFocus, int row, int column) {
-//                return this;
-//            }
-//        }
+    
+    
+   
 
 }
